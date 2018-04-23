@@ -1,0 +1,22 @@
+# OS X 
+.DS_Store
+
+# Visual Studio Code 
+.vscode
+
+# .edn file created on POST event 
+sample_params.edn
+
+# .sql example file for dev purposes 
+public/example.sql
+
+# Ignore native extensions and npm rebuild changes in node_modules/
+node_modules/**/*.node
+node_modules/**/*.o
+node_modules/**/*.a
+node_modules/**/*.mk
+node_modules/**/*.gypi
+node_modules/**/*.target
+node_modules/**/.deps/
+node_modules/**/build/Makefile
+node_modules/**/**/build/Makefile
