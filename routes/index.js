@@ -69,25 +69,50 @@ router.post('/', function(req, res) {
         var simulations = req.body['simulations'];
         var randomSeed = req.body['random-seed'];
 
-        // Convert JS to EDN 
-        var exEdn = edn.encode({
-            ignitionRow: ignitionRow,
-            ignitionCol: ignitionCol,
-            maxRuntime: maxRuntime,
-            temperature: temperature,
-            relativeHumidity: relativeHumidity,
-            windSpeed20ft: windSpeed20ft
-        });
+        // Convert JS to EDN object (Map) 
+        var ednMap = new edn.Map([edn.kw(":db-spec"), 
+                            new edn.Map([edn.kw(":classname"), "org.postgresql.Driver",
+                                edn.kw(":subprotocol"), "postgresql",
+                                edn.kw(":subname"), "//localhost:5432/gridfire",
+                                edn.kw(":user"), "gridfire"]),
+                            edn.kw(":landfire-layers"),
+                            new edn.Map([edn.kw(":elevation"), "clip.dem",
+                                edn.kw(":slope"), "clip.slp",
+                                edn.kw(":aspect"), "clip.asp",
+                                edn.kw(":fuel-model"), "clip.fbfm40",
+                                edn.kw(":canopy-height"), "clip.ch",
+                                edn.kw(":canopy-base-height"), "clip.cbh",
+                                edn.kw(":crown-bulk-density"), "clip.cbd",
+                                edn.kw(":canopy-cover"), "clip.cc"]),
+                                    edn.kw(":srid"), "CUSTOM:900914",
+                                    edn.kw(":cell-size"), 98.425,
+                                    edn.kw(":ignition-row"), eval(ignitionRow), 
+                                    edn.kw(":ignition-col"), eval(ignitionCol),
+                                    edn.kw(":max-runtime"), eval(maxRuntime),
+                                    edn.kw(":temperature"), eval(temperature),
+                                    edn.kw(":relative-humidity"), eval(relativeHumidity),
+                                    edn.kw(":wind-speed-20ft"), eval(windSpeed20ft),
+                                    edn.kw(":wind-from-direction"), eval(windFromDirection),
+                                    edn.kw(":foliar-moisture"), eval(foliarMoisture),
+                                    edn.kw(":ellipse-adjustment-factor"), eval(ellipseAdjustmentFactor),
+                                    edn.kw(":simulations"), eval(simulations),
+                                    edn.kw(":random-seed"), eval(randomSeed),
+                                    edn.kw(":outfile-suffix"), "_tile_100",
+                                    edn.kw(":output-landfire-inputs?"), true,
+                                    edn.kw(":output-geotiffs?"), true,
+                                    edn.kw(":output-pngs?"), true,
+                                    edn.kw(":output-csvs?"), true]);
 
-        fs.writeFile('sample_params.edn', exEdn, function(err, exEdn) {
+        console.log("\nednMap: ", ednMap);
+        console.log("+++++++++++++++++++\n");
+
+        // Encode EDN Map
+        var ednObj = edn.encode(ednMap);
+
+        fs.writeFile('sample_params.edn', ednObj, function(err, ednObj) {
             if (err) console.log(err);
-            console.log('Wrote to file.');
+            console.log('\nWrote params to file sample_params.edn.\n');
         });
-
-        console.log("\nParameters for Clojure GridFire\n---------------\n")
-        console.log("req.body: ", req.body);
-        console.log("exEdn: ", exEdn);
-        console.log("\n---------------\n");
 
         res.render('index', { title: 'GridFire Interface', exPost: ignitionRow, error: null });
 
