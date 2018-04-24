@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var Slider = require('bootstrap-slider');
+var jsdom = require('jsdom');
+var $ = require('jquery')(new jsdom.JSDOM().window);
 
 // Javascript implementation of EDN for Clojure
 var edn = require('jsedn');
@@ -40,6 +43,13 @@ router.post('/', function(req, res) {
 
     console.log("POST event here.");
 
+    console.log("\nTry to get slider value");
+    //var maxRuntime = $('#max-runtime').slider('getValue');
+    var maxRuntime = req.body['max-runtime'];
+    console.log("\nreq.body: ", req.body);
+    console.log("\nmaxRuntime slider: ", maxRuntime);
+    console.log("\n");
+
     /* Parameters for GridFire Clojure model 
         ignition-row
         ignition-col
@@ -59,7 +69,13 @@ router.post('/', function(req, res) {
     try {
         var ignitionRow = req.body['ignition-row'];
         var ignitionCol = req.body['ignition-col'];
-        var maxRuntime = req.body['max-runtime'];
+
+        // Get max runtime slider value 
+        //var maxRuntime = $('#max-runtime').slider('getValue');
+
+        // var maxRuntime = req.body['max-runtime'];
+        var maxRuntime = 0; 
+
         var temperature = req.body['temperature'];
         var relativeHumidity = req.body['relative-humidity'];
         var windSpeed20ft = req.body['wind-speed-20ft'];
@@ -88,7 +104,7 @@ router.post('/', function(req, res) {
                                     edn.kw(":cell-size"), 98.425,
                                     edn.kw(":ignition-row"), eval(ignitionRow), 
                                     edn.kw(":ignition-col"), eval(ignitionCol),
-                                    edn.kw(":max-runtime"), eval(maxRuntime),
+                                    edn.kw(":max-runtime"), maxRuntime,
                                     edn.kw(":temperature"), eval(temperature),
                                     edn.kw(":relative-humidity"), eval(relativeHumidity),
                                     edn.kw(":wind-speed-20ft"), eval(windSpeed20ft),

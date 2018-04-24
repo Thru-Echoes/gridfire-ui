@@ -2,19 +2,13 @@ doctype html
 html
     include head.pug
     body
-        script(type='text/javascript' src='https://code.jquery.com/jquery-3.3.1.min.js')
-        script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
-        script(type='text/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
-        script(type='text/javascript' src='/javascripts/openlayers-3.13.0.js')
-        script(type='text/javascript' src='/javascripts/mercator-openlayers.js')
-        script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.js')
-        script(type='text/javascript' src='/javascripts/map_script.js')
         block content
         include map.pug
         div.container
             div.row#btmMap
-        div.container(style="text-align: center; padding-top: 80px;")
+        div.container(style="text-align: center; padding-top: 180px;")
             h3 GridFire raster-based fire spread model
         div.container
             div.row#preFoot
         include foot.pug
+        include ../public/javascripts/form_script.js

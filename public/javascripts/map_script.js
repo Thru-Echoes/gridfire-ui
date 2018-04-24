@@ -24,32 +24,5 @@ $( document ).ready(function() {
 
     // Add overlay for form fields 
     mercator.addOverlay(mapConfig, '#sampleFields'); 
-
-    // Toggle form fields 
-
-    $("#formFieldsBtn").click(function() {
-        $("#formFieldsContent").toggle();
-    });
-
-    // Parameter fields 
-
-    $('#max-runtime').bootstrapSlider({
-        formatter: function(value) {
-            return 'Runtime: ' + value;
-        }
-    });
-
-    /*var map = new ol.Map({
-        target: 'map',
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            })
-        ],
-        view: new ol.View({
-            center: ol.proj.fromLonLat([-120.8958, 38.8375]),
-                zoom: 6
-            })
-    });*/
 });
 

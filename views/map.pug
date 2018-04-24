@@ -14,14 +14,16 @@
                                 label.col-sm-6(for='ignition-col') Ignition column
                                 div.col-sm-6.go-right
                                     input#ignition-col(name='ignition-col', type='text', placeholder='Default: 20 80', required='')
-                            br
                             div.form-group
                                 label.col-sm-6(for='max-runtime') Max simulation runtime (Minutes)
-                                div.col-sm-6.go-right
-                                    input#max-runtime(name='max-runtime', data-slider-id='max-runtime', data-slider-min="0", data-slider-max="180", data-slider-step="1", data-slider-value="60")
+                                div.col-sm-6.go-right 
+                                    input.slider#max-runtime(name='max-runtime', type='text', value='60', onchange='updateRuntime(this.value)')
+                                    input#show-runtime(type='text', value='60', style='margin-left: 20px;')
                                 label.col-sm-6(for='temperature') Temperature (degrees Fahrenheit)
                                 div.col-sm-6.go-right
                                     input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
+                                    //input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='', onchange='updateTemp(this.value')
+                                    //input#show-temp(type='text', value='50')
                             div.form-group
                                 label.col-sm-6(for='relative-humidity') Relative humidity (%)
                                 div.col-sm-6.go-right
@@ -50,6 +52,4 @@
                                 div.col-sm-3
                                 div.col-sm-3
                                     input(type='submit', value='Send to .edn')
-                            if error
-                                p= error
 

@@ -5,6 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var Slider = require('bootstrap-slider');
+var jsdom = require('jsdom');
+var $ = require('jquery')(new jsdom.JSDOM().window);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

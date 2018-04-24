@@ -9,6 +9,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "bootstrap-slider": "^10.0.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
@@ -16,6 +17,7 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jquery": "^3.3.1",
+    "jsdom": "^11.9.0",
     "jsedn": "^0.4.1",
     "morgan": "~1.9.0",
     "ol": "^4.6.5",
