@@ -24,7 +24,7 @@ a {
 
 #welcome {
     /*padding-top: 150px;*/
-    padding-bottom: 90px;
+    /*padding-bottom: 90px;*/
     text-align: center;
 }
 
@@ -93,6 +93,10 @@ a {
 #max-runtime-slider .slider-selection {
     background: #BABABA;
 }
+
+/* Burn radios */
+
+/* Tooltips for form inputs */ 
 
 .tooltip {
     position: relative;

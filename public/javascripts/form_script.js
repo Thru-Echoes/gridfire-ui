@@ -6,7 +6,7 @@ $( document ).ready(function() {
         $('#formFieldsContent').toggle();
     });
 
-    // Parameter fields 
+    // Initiate runtime slider 
 
     var runtimeSlider = $('#max-runtime').slider({
         min: 0,
@@ -15,6 +15,18 @@ $( document ).ready(function() {
         step: 1,
         formatter: function(value) {
             return 'Runtime: ' + value;
+        }
+    });
+
+    $('input[type="radio"]').on('click change', function(e) {
+        console.log("\nRadio button change");
+
+        if (document.getElementById('single-burn-radio').checked) {
+            document.getElementById('single-burn-coords').style.display = 'block';
+            document.getElementById('random-burn-coords').style.display = 'none';
+        } else if (document.getElementById('random-burn-radio').checked) {
+            document.getElementById('single-burn-coords').style.display = 'none';
+            document.getElementById('random-burn-coords').style.display = 'block';
         }
     });
 });
@@ -26,3 +38,13 @@ function updateRuntime(val) {
 function updateTemp(val) {
     document.getElementById('show-temp').value = val;
 }
+
+/*function updateSingle(burnRadio) {
+    document.getElementById('single-burn-coords').style('display') = 'block';
+    document.getElementById('random-burn-coords').style('display') = 'none';
+}
+
+function updateRandom(burnRadio) {
+    document.getElementById('single-burn-coords').style('display') = 'none';
+    document.getElementById('random-burn-coords').style('display') = 'block';
+}*/
