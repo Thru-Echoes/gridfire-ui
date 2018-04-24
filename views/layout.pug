@@ -5,45 +5,16 @@ html
         script(type='text/javascript' src='https://code.jquery.com/jquery-3.3.1.min.js')
         script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
         script(type='text/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
+        script(type='text/javascript' src='/javascripts/openlayers-3.13.0.js')
+        script(type='text/javascript' src='/javascripts/mercator-openlayers.js')
+        script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.js')
         script(type='text/javascript' src='/javascripts/map_script.js')
         block content
         include map.pug
         div.container
             div.row#btmMap
-        div.container-fluid#formContainer
-            div.row
-                div.container
-                    div.row
-                        div.col-md-6
-                        div.col-md-6
-                            h3(style="padding-bottom: 20px;") Enter parameters for GridFire model
-                            fieldset
-                                form(action='/', method='post')
-                                    label(for='ignition-row') Ignition row
-                                        input#ignition-row(name='ignition-row', type='text', placeholder='Default: 10 90', required='')
-                                    label(for='ignition-col') Ignition column
-                                        input#ignition-col(name='ignition-col', type='text', placeholder='Default: 20 80', required='')
-                                    label(for='max-runtime') Max simulation runtime (Minutes)
-                                        input#max-runtime(name='max-runtime', type='text', placeholder='Default: 60', required='')
-                                    label(for='temperature') Temperature (degrees Fahrenheit)
-                                        input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
-                                    label(for='relative-humidity') Relative humidity (%)
-                                        input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: 1 10 20', required='')
-                                    label(for='wind-speed-20ft') Wind speed 20ft (miles / hour)
-                                        input#wind-speed-20ft(name='wind-speed-20ft', type='text', placeholder='Default: 10 15 20', required='')
-                                    label(for='wind-from-direction') Wind from direction (degrees clockwise from North)
-                                        input#wind-from-direction(name='wind-from-direction', type='text', placeholder='Default: 0 90 180 270', required='')
-                                    label(for='foliar-moisture') Foliar moisture (%)
-                                        input#foliar-moisture(name='foliar-moisture', type='text', placeholder='Default: 90', required='')
-                                    label(for='ellipse-adjustment-factor') Ellipse adjustment factor 
-                                        input#ellipse-adjustment-factor(name='ellipse-adjustment-factor', type='text', placeholder='Default: 1.0', required='')
-                                    label(for='simulations') Number of simulations to run
-                                        input#simulations(name='simulations', type='text', placeholder='Default: 10', required='')
-                                    label(for='random-seed') Random seed for simulations 
-                                        input#random-seed(name='random-seed', type='text', placeholder='Default: 1234567890', required='')
-                                    input(type='submit', value='Get value!')
-                                    if error
-                                        p= error
-                div.container
-                    div.row#preFoot
+        div.container(style="text-align: center; padding-top: 80px;")
+            h3 GridFire raster-based fire spread model
+        div.container
+            div.row#preFoot
         include foot.pug

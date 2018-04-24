@@ -1,2 +1,55 @@
 #map
+    #formFields(style="z-index: 9999; position: absolute; right: 1%;")
+        button#formFieldsBtn GridFire
+        div.container#formFieldsContent
+            div.row
+                div.col-md-12
+                    h4(style="padding-top: 20px; padding-bottom: 20px;") Enter parameters for GridFire model
+                    fieldset
+                        form.form-inline#userForm(action='/', method='post')
+                            div.form-group
+                                label.col-sm-6(for='ignition-row') Ignition row
+                                div.col-sm-6.go-right
+                                    input#ignition-row(name='ignition-row', type='text', placeholder='Default: 10 90', required='')
+                                label.col-sm-6(for='ignition-col') Ignition column
+                                div.col-sm-6.go-right
+                                    input#ignition-col(name='ignition-col', type='text', placeholder='Default: 20 80', required='')
+                            br
+                            div.form-group
+                                label.col-sm-6(for='max-runtime') Max simulation runtime (Minutes)
+                                div.col-sm-6.go-right
+                                    input#max-runtime(name='max-runtime', data-slider-id='max-runtime', data-slider-min="0", data-slider-max="180", data-slider-step="1", data-slider-value="60")
+                                label.col-sm-6(for='temperature') Temperature (degrees Fahrenheit)
+                                div.col-sm-6.go-right
+                                    input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
+                            div.form-group
+                                label.col-sm-6(for='relative-humidity') Relative humidity (%)
+                                div.col-sm-6.go-right
+                                    input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: 1 10 20', required='')
+                                label.col-sm-6(for='wind-speed-20ft') Wind speed 20ft (miles / hour)
+                                div.col-sm-6.go-right
+                                    input#wind-speed-20ft(name='wind-speed-20ft', type='text', placeholder='Default: 10 15 20', required='')
+                            div.form-group
+                                label.col-sm-6(for='wind-from-direction') Wind from direction (degrees clockwise from North)
+                                div.col-sm-6.go-right
+                                    input#wind-from-direction(name='wind-from-direction', type='text', placeholder='Default: 0 90 180 270', required='')
+                                label.col-sm-6(for='foliar-moisture') Foliar moisture (%)
+                                div.col-sm-6.go-right
+                                    input#foliar-moisture(name='foliar-moisture', type='text', placeholder='Default: 90', required='')
+                            div.form-group
+                                label.col-sm-6(for='ellipse-adjustment-factor') Ellipse adjustment factor 
+                                div.col-sm-6.go-right
+                                    input#ellipse-adjustment-factor(name='ellipse-adjustment-factor', type='text', placeholder='Default: 1.0', required='')
+                                label.col-sm-6(for='simulations') Number of simulations to run
+                                div.col-sm-6
+                                    input#simulations(name='simulations', type='text', placeholder='Default: 10', required='')
+                            div.form-group
+                                label.col-sm-3(for='random-seed') Random seed for simulations 
+                                div.col-sm-3
+                                    input#random-seed(name='random-seed', type='text', placeholder='Default: 1234567890', required='')
+                                div.col-sm-3
+                                div.col-sm-3
+                                    input(type='submit', value='Send to .edn')
+                            if error
+                                p= error
 

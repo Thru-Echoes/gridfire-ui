@@ -32,7 +32,7 @@ router.get('/map', function(req, res) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'GridFire Interface', exPost: null, error: null });
+    res.render('index', { title: 'GridFire Interface', error: null });
 });
 
 /* POST event */
@@ -114,10 +114,10 @@ router.post('/', function(req, res) {
             console.log('\nWrote params to file sample_params.edn.\n');
         });
 
-        res.render('index', { title: 'GridFire Interface', exPost: ignitionRow, error: null });
+        res.render('index', { title: 'GridFire Interface', error: null });
 
     } catch(err) {
-        res.render('index', { title: 'GridFire Interface', exPost: null, error: 'Error, please try again!' });
+        res.render('index', { title: 'GridFire Interface', error: 'Error, please try again!' });
     }
 })
 

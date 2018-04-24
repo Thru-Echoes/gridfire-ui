@@ -1,16 +1,20 @@
 head
     title= title
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/openlayers-3.13.0.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='https://openlayers.org/en/v4.6.5/css/ol.css')
-    script(type='text/javascript' src="https://openlayers.org/en/v4.6.5/build/ol.js")
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.css')
+    //link(rel='stylesheet', href='https://openlayers.org/en/v4.6.5/css/ol.css')
+    //script(type='text/javascript' src="https://openlayers.org/en/v4.6.5/build/ol.js")
 header#header
     nav.navbar.navbar-static-top.navbar-dark.fixed-top.bg-dark
         a.navbar-brand(href='#')
             h2 GridFire
-        button.navbar-toggler(type='button', data-toggle='collapse', data-target="#navbarCollapse", aria-controls="navbarCollapse", aria-expanded="false", aria-label="Toggle navigation")
+        a.navbar-brand.navbar-right.thumbnail(href='https://sig-gis.com/')
+            img.img-thumbnail.img-responsive(src='images/sig-logo.png')
+        //button.navbar-toggler(type='button', data-toggle='collapse', data-target="#navbarCollapse", aria-controls="navbarCollapse", aria-expanded="false", aria-label="Toggle navigation")
             span.navbar-toggler-icon
-        div.collapse.navbar-collapse#navbarCollapse
+        //div.collapse.navbar-collapse#navbarCollapse
             ul.navbar-nav.mr-auto
                 li.nav-item.active
                     a.nav-link(href='/') Home

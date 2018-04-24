@@ -9,6 +9,7 @@ body {
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
     /* Margin bottom to match footer height */
     margin-bottom: 100px;
+    background-color: rgba(52, 58, 64, 0.3);
 }
 
 a {
@@ -22,32 +23,83 @@ a {
 }
 
 #welcome {
-    padding-top: 150px;
-    padding-bottom: 50px;
+    /*padding-top: 150px;*/
+    padding-bottom: 90px;
     text-align: center;
 }
 
 .navbar-right {
-    color: #fff;
+    /*color: #fff;*/
+    color: rgba(106, 148, 72, 0.8);
+}
+
+.img-thumbnail {
+    background-color: inherit;
+    border: none;
 }
 
 /* Map */ 
 
-#map {
+/*#map {
     height: 600px;
     width: 100%;
     padding: 30px;
-}
+}*/
 
 #btmMap {
-    height: 20px;
+    /*height: 20px;*/
+}
+
+.ol-attribution.ol-logo-only {
+    bottom: 1.4em;
+}
+
+/* Form fields for model params */
+
+#formFieldsBtn {
+    margin-top: 5px;
+    right: 1%;
+    position: absolute;
+    background-color: rgba(238, 238, 238, 0.8);
+    font-size: 12px;
+    text-align: center;
+    will-change: contents,width;
+}
+
+#formFieldsContent {
+    margin-top: 35px;
+    background-color: rgba(238, 238, 238, 0.8);
+    border: 1px solid #eee;
+    border-top: none;
+    /*color: #eee;*/
+    font-size: 12px;
+    text-align: center;
+    /*margin: 1px;*/
+    will-change: contents,width;
+}
+
+#userForm .form-group {
+    /*text-align: right;*/
+}
+
+.go-right {
+    right: 0;
+}
+
+.form-group {
+    padding-bottom: 20px;
+}
+
+#max-runtime .slider-selection {
+    background: #BABABA;
 }
 
 /* Form container */
 
 #formContainer {
     padding-top: 50px;
-    background-color: rgba(52, 58, 64, 0.3);
+    /*background-color: rgba(52, 58, 64, 0.3);*/
+    /*background-color: rgba(106, 148, 72, 0.8);*/
     left: 0;
     right: 0;
 }
