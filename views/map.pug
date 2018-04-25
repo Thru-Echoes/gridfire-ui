@@ -19,27 +19,31 @@
                             p Enter coordinates for single burn site or draw range on map for random burn sites
                             br
                             div#single-burn-coords
-                                p Ignition Row 
-                                input#ignition-row(name='ignition-row', type='text', placeholder='Default: 10 90', required='')
-                                br
-                                br
-                                p Ignition Column 
-                                input#ignition-col(name='ignition-col', type='text', placeholder='Default: 20 80', required='')
+                                div(style='display: table; padding-left: 10%;')
+                                    div(style='display: table-cell; padding-right: 2em')
+                                        p Latitude
+                                        input#ignition-row(name='ignition-row', type='text', placeholder='38.8375', required='')
+                                    br
+                                    br
+                                    div(style='display: table-cell; padding-left: 5em;')
+                                        p Longitude 
+                                        input#ignition-col(name='ignition-col', type='text', placeholder='-120.8958', required='')
                             div#random-burn-coords(style='display: none;')
                                 p North coordinate 
                                 input#north-coord(name='north-coord', type='text', placeholder='Lat / long')
                                 br
                                 br
-                                p East coordinate 
-                                input#east-coord(name='east-coord', type='text', placeholder='Lat / long')
+                                div(style='display: table; padding-left: 10%;')
+                                    div(style='display: table-cell; padding-right: 2em;')
+                                        p West coordinate
+                                        input#west-coord(name='west-coord', type='text', placeholder='Lat / long')
+                                    div(style='display: table-cell; padding-left: 5em;')
+                                        p East coordinate 
+                                        input#east-coord(name='east-coord', type='text', placeholder='Lat / long')
                                 br
                                 br
                                 p South coordinate
                                 input#south-coord(name='south-coord', type='text', placeholder='Lat / long')
-                                br
-                                br
-                                p West coordinate
-                                input#west-coord(name='west-coord', type='text', placeholder='Lat / long')
                                 br
                                 br
                             hr
@@ -50,12 +54,15 @@
                             input#show-runtime(type='text', value='60', style='margin-left: 20px;')
                             br
                             br
-                            p Temperature 
-                            input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
-                            br
-                            br
-                            p Relative humidity (%)
-                            input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: 1 10 20', required='')
+                            div(style='display: table; padding-left: 10%;')
+                                div(style='display: table-cell; padding-right: 2em')
+                                    p Temperature 
+                                    input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
+                                br
+                                br
+                                div(style='display: table-cell; padding-left: 5em;')
+                                    p Relative humidity (%)
+                                    input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: 1 10 20', required='')
                             br
                             br
                             p Wind speed 20ft (miles/hour)
@@ -66,20 +73,26 @@
                             input#wind-from-direction(name='wind-from-direction', type='text', placeholder='Default: 0 90 180 270', required='')
                             br
                             br
-                            p Foliar moisture (%)
-                            input#foliar-moisture(name='foliar-moisture', type='text', placeholder='Default: 90', required='')
+                            div(style='display: table; padding-left: 10%;')
+                                div(style='display: table-cell; padding-right: 2em')
+                                    p Foliar moisture (%)
+                                    input#foliar-moisture(name='foliar-moisture', type='text', placeholder='Default: 90', required='')
+                                br
+                                br
+                                div(style='display: table-cell; padding-left: 5em;')
+                                    p Ellipse adjustment factor 
+                                    input#ellipse-adjustment-factor(name='ellipse-adjustment-factor', type='text', placeholder='Default: 1.0', required='')
                             br
                             br
-                            p Ellipse adjustment factor 
-                            input#ellipse-adjustment-factor(name='ellipse-adjustment-factor', type='text', placeholder='Default: 1.0', required='')
-                            br
-                            br
-                            p Number of simulations
-                            input#simulations(name='simulations', type='text', placeholder='Default: 10', required='')
-                            br
-                            br
-                            p Random seed
-                            input#random-seed(name='random-seed', type='text', placeholder='Default: 1234567890', required='')
+                            div(style='display: table; padding-left: 10%;')
+                                div(style='display: table-cell; padding-right: 2em')
+                                    p Number of simulations
+                                    input#simulations(name='simulations', type='text', placeholder='Default: 10', required='')
+                                br
+                                br
+                                div(style='display: table-cell; padding-left: 5em;')
+                                    p Random seed
+                                    input#random-seed(name='random-seed', type='text', placeholder='Default: 1234567890', required='')
                             br
                             br
                             input(type='submit', value='Send to .edn')
