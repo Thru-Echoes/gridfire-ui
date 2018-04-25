@@ -5,6 +5,20 @@ var Slider = require('bootstrap-slider');
 var jsdom = require('jsdom');
 var $ = require('jquery')(new jsdom.JSDOM().window);
 
+// Unique session id 
+var crypto = require('crypto');
+
+var generate_session_id = function() {
+    var sha = crypto.createHash('sha256');
+    sha.update(Math.random().toString());
+    return sha.digest('hex');
+}
+
+var session_id = generate_session_id();
+
+console.log("\n----------\nSession_id for this user: ", session_id);
+console.log("\n\n"); 
+
 // Javascript implementation of EDN for Clojure
 var edn = require('jsedn');
 
@@ -43,11 +57,7 @@ router.post('/', function(req, res) {
 
     console.log("POST event here.");
 
-    console.log("\nTry to get slider value");
-    //var maxRuntime = $('#max-runtime').slider('getValue');
-    var maxRuntime = req.body['max-runtime'];
-    console.log("\nreq.body: ", req.body);
-    console.log("\nmaxRuntime slider: ", maxRuntime);
+    console.log("\nSession_id within index.js: ", session_id);
     console.log("\n");
 
     /* Parameters for GridFire Clojure model 
@@ -70,12 +80,7 @@ router.post('/', function(req, res) {
         var ignitionRow = req.body['ignition-row'];
         var ignitionCol = req.body['ignition-col'];
 
-        // Get max runtime slider value 
-        //var maxRuntime = $('#max-runtime').slider('getValue');
-
-        // var maxRuntime = req.body['max-runtime'];
-        var maxRuntime = 0; 
-
+        var maxRuntime = req.body['max-runtime'];
         var temperature = req.body['temperature'];
         var relativeHumidity = req.body['relative-humidity'];
         var windSpeed20ft = req.body['wind-speed-20ft'];
@@ -92,19 +97,19 @@ router.post('/', function(req, res) {
                                 edn.kw(":subname"), "//localhost:5432/gridfire",
                                 edn.kw(":user"), "gridfire"]),
                             edn.kw(":landfire-layers"),
-                            new edn.Map([edn.kw(":elevation"), "clip.dem",
-                                edn.kw(":slope"), "clip.slp",
-                                edn.kw(":aspect"), "clip.asp",
-                                edn.kw(":fuel-model"), "clip.fbfm40",
-                                edn.kw(":canopy-height"), "clip.ch",
-                                edn.kw(":canopy-base-height"), "clip.cbh",
-                                edn.kw(":crown-bulk-density"), "clip.cbd",
-                                edn.kw(":canopy-cover"), "clip.cc"]),
+                            new edn.Map([edn.kw(":elevation"), "clip.dem_" + session_id,
+                                edn.kw(":slope"), "clip.slp_" + session_id,
+                                edn.kw(":aspect"), "clip.asp_" + session_id,
+                                edn.kw(":fuel-model"), "clip.fbfm40_" + session_id,
+                                edn.kw(":canopy-height"), "clip.ch_" + session_id,
+                                edn.kw(":canopy-base-height"), "clip.cbh_" + session_id,
+                                edn.kw(":crown-bulk-density"), "clip.cbd_" + session_id,
+                                edn.kw(":canopy-cover"), "clip.cc_" + session_id]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
                                     edn.kw(":ignition-row"), eval(ignitionRow), 
                                     edn.kw(":ignition-col"), eval(ignitionCol),
-                                    edn.kw(":max-runtime"), maxRuntime,
+                                    edn.kw(":max-runtime"), eval(maxRuntime),
                                     edn.kw(":temperature"), eval(temperature),
                                     edn.kw(":relative-humidity"), eval(relativeHumidity),
                                     edn.kw(":wind-speed-20ft"), eval(windSpeed20ft),
