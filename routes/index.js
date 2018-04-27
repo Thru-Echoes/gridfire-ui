@@ -26,6 +26,36 @@ var edn = require('jsedn');
 var pg = require("pg");
 // var connectPostgres = "postgres://USERNAME:PASSWORD@127.0.0.1/dbname";
 
+// SQL for PostGIS
+
+/*
+-- CREATE VIEW schema.table (~= namespace/var in Clojure)
+-- e.g. clips = schema, canpoy_height = table 
+-- CREATE VIEW => non-caches, run everytime (non-memoized)
+-- CREATE TABLE => caches (memoized)
+CREATE VIEW clips.<table_name>_<session_id> AS
+  -- Create vars | Need to convert string to PostGIS geometry obj
+  WITH geom AS ST_GeomFromGeoJSON(<geojson_polygon>)
+    -- ST_Clip applies to each tile
+    -- ST_Union aggregates (union) all clipped tiles into 1 tile
+    SELECT ST_Union(ST_Clip(rast, geom)) AS rast
+      -- landfire.<table_name> sequence of maps {:rid int :rast raster}
+      FROM landfire.<table_name>
+      WHERE ST_Intersects(rast, geom);
+    -- LIMIT 10; -- same Clojure (take 10)
+    -- WHERE => Clojure (filter ST_Intersects())
+    -- FROM => sequence generator
+    -- ORDER BY => Clojure (sort) or (sort-by)
+    -- e.g. ORDER BY <field> (age)
+    -- WITH => (Clojure let) bind names to exp [sequence calls]
+    -- CREATE => (Clojure def)
+    -- SELECT => (Clojure Map or Reduce)
+
+-- raster2pgsql -t width x height (-t = tiles raster)
+-- one CREATE VIEW for each LANDFIRE layer
+-- Within .edn file calls clips.canopy_height_<session_id>
+*/
+
 /* 
 // GET map page 
 router.get('/map', function(req, res) {
