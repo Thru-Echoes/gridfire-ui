@@ -1,6 +1,4 @@
-
 $( document ).ready(function() {
-
     // Layers for OpenLayers map
     var layerConfigs = [{title: 'DigitalGlobeRecentImagery',
     extent: null,
@@ -27,12 +25,28 @@ $( document ).ready(function() {
     
     // Enable dragbox interaction (lon-min, lat-min, lon-max, lat-max are the coordinate input fields)
     var displayDragBoxBounds = function (dragBox) {
-    var extent = dragBox.getGeometry().clone().transform("EPSG:3857", "EPSG:4326").getExtent();
+        var extent = dragBox.getGeometry().clone().transform("EPSG:3857", "EPSG:4326").getExtent();
         document.getElementById("lon-min").value = extent[0];
         document.getElementById("lat-min").value = extent[1];
         document.getElementById("lon-max").value = extent[2];
         document.getElementById("lat-max").value = extent[3];
     };
     mercator.enableDragBoxDraw(mapConfig, displayDragBoxBounds);
+
+    function onMapClick(e) {
+        var currLoc = e.coordinate;
+
+        console.log('\ne: ', e);
+        console.log('currLoc: ', currLoc);
+        console.log('\n');
+
+        var latDiv = document.getElementById('ignition-row');
+        var longDiv = document.getElementById('ignition-col');
+
+        var newCoords = mercator.reprojectFromMap(currLoc[0], currLoc[1]);
+        latDiv.value = newCoords[1];
+        longDiv.value = newCoords[0];
+    }
+    mapConfig.map.on('click', onMapClick);
 });
 
