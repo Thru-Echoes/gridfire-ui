@@ -23,6 +23,16 @@ $( document ).ready(function() {
     mercator.setVisibleLayer(mapConfig, layerDigitalGlobeStreets);
 
     // Add overlay for form fields 
-    mercator.addOverlay(mapConfig, '#sampleFields'); 
+    mercator.addOverlay(mapConfig, '#sampleFields');
+    
+    // Enable dragbox interaction (lon-min, lat-min, lon-max, lat-max are the coordinate input fields)
+    var displayDragBoxBounds = function (dragBox) {
+    var extent = dragBox.getGeometry().clone().transform("EPSG:3857", "EPSG:4326").getExtent();
+        document.getElementById("lon-min").value = extent[0];
+        document.getElementById("lat-min").value = extent[1];
+        document.getElementById("lon-max").value = extent[2];
+        document.getElementById("lat-max").value = extent[3];
+    };
+    mercator.enableDragBoxDraw(mapConfig, displayDragBoxBounds);
 });
 

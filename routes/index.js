@@ -55,11 +55,6 @@ router.get('/', function(req, res, next) {
 /* POST event */
 router.post('/', function(req, res) {
 
-    console.log("POST event here.");
-
-    console.log("\nSession_id within index.js: ", session_id);
-    console.log("\n");
-
     /* Parameters for GridFire Clojure model 
         ignition-row
         ignition-col

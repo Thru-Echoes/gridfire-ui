@@ -7,13 +7,12 @@
                     h4(style="padding-top: 20px; padding-bottom: 20px;") Enter parameters for GridFire model
                     fieldset
                         form#userForm(action='/', method='post')
-                            h5 Burn sites
-                            label.container Single burn site
-                                input#single-burn-radio(type='radio', checked='checked', name='radio')
-                                span.checkmark
-                            label.container Random burn sites
-                                input#random-burn-radio(type='radio', name='radio')
-                                span.checkmark
+                            label.container
+                                input#single-burn-radio(type='radio', checked='checked', name='radio') 
+                                |   Single burn site
+                            label.container
+                                input#random-burn-radio(type='radio', name='radio') 
+                                |   Random burn sites 
                             br
                             br
                             p Enter coordinates for single burn site or draw range on map for random burn sites
@@ -48,21 +47,30 @@
                                 br
                             hr
                             br
+                            p Values can be entered three ways:
+                            i  Scalar 
+                            |  | e.g. 60
+                            br
+                            i  Discrete sample set 
+                            |  | e.g. [50 65 80]
+                            br
+                            i  Continuous sample range 
+                            |  | e.g. (1 10 20)
+                            br
                             br
                             p Max simulation runtime (Minutes)
-                            input.slider#max-runtime(name='max-runtime', type='text', value='60', onchange='updateRuntime(this.value)')
-                            input#show-runtime(type='text', value='60', style='margin-left: 20px;')
+                            input#max-runtime(name='max-runtime', type='text', placeholder='Default: 60', required='')
                             br
                             br
                             div(style='display: table; padding-left: 10%;')
                                 div(style='display: table-cell; padding-right: 2em')
                                     p Temperature 
-                                    input#temperature(name='temperature', type='text', placeholder='Default: 50 65 80', required='')
+                                    input#temperature(name='temperature', type='text', placeholder='Default: [50 65 80]', required='')
                                 br
                                 br
                                 div(style='display: table-cell; padding-left: 5em;')
                                     p Relative humidity (%)
-                                    input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: 1 10 20', required='')
+                                    input#relative-humidity(name='relative-humidity', type='text', placeholder='Default: (1 10 20)', required='')
                             br
                             br
                             p Wind speed 20ft (miles/hour)

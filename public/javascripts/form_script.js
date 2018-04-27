@@ -8,7 +8,7 @@ $( document ).ready(function() {
 
     // Initiate runtime slider 
 
-    var runtimeSlider = $('#max-runtime').slider({
+    /*var runtimeSlider = $('#max-runtime').slider({
         min: 0,
         max: 180,
         value: 60,
@@ -16,7 +16,7 @@ $( document ).ready(function() {
         formatter: function(value) {
             return 'Runtime: ' + value;
         }
-    });
+    });*/
 
     $('input[type="radio"]').on('click change', function(e) {
         console.log("\nRadio button change");
@@ -30,21 +30,3 @@ $( document ).ready(function() {
         }
     });
 });
-
-function updateRuntime(val) {
-    document.getElementById('show-runtime').value = val;
-}
-
-function updateTemp(val) {
-    document.getElementById('show-temp').value = val;
-}
-
-/*function updateSingle(burnRadio) {
-    document.getElementById('single-burn-coords').style('display') = 'block';
-    document.getElementById('random-burn-coords').style('display') = 'none';
-}
-
-function updateRandom(burnRadio) {
-    document.getElementById('single-burn-coords').style('display') = 'none';
-    document.getElementById('random-burn-coords').style('display') = 'block';
-}*/
