@@ -36,16 +36,12 @@ $( document ).ready(function() {
     function onMapClick(e) {
         var currLoc = e.coordinate;
 
-        console.log('\ne: ', e);
-        console.log('currLoc: ', currLoc);
-        console.log('\n');
-
-        var latDiv = document.getElementById('ignition-row');
-        var longDiv = document.getElementById('ignition-col');
+        var latDiv = document.getElementById('ignition-lat');
+        var lonDiv = document.getElementById('ignition-lon');
 
         var newCoords = mercator.reprojectFromMap(currLoc[0], currLoc[1]);
         latDiv.value = newCoords[1];
-        longDiv.value = newCoords[0];
+        lonDiv.value = newCoords[0];
     }
     mapConfig.map.on('click', onMapClick);
 });

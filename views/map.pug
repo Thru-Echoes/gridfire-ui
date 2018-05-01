@@ -1,109 +1,98 @@
 #map
     #formFields(style="z-index: 9999; position: absolute; right: 1%;")
         button#formFieldsBtn GridFire
-        div.container#formFieldsContent(style="display: none;")
-            div.row
-                div.col-md-12
-                    h4(style="padding-top: 20px; padding-bottom: 20px;") Enter parameters for GridFire model
-                    fieldset
-                        form#userForm(action='/', method='post')
-                            label.container
-                                input#single-burn-radio(type='radio', checked='checked', name='radio') 
-                                |   Single burn site
-                            label.container
-                                input#random-burn-radio(type='radio', name='radio', value='polygon', onclick='toggleControl(this)') 
-                                |   Random burn sites 
+    div.container#formFieldsContent(style="display: none; z-index: 9999; position: absolute; right: 1%;")
+        div.row
+            div.col-md-12
+                h4(style="padding-top: 20px; padding-bottom: 20px;") Enter parameters for GridFire model
+                fieldset
+                    form#userForm(action='/', method='post')
+                        label.container
+                            input#single-burn-radio(type='radio', checked='checked', name='radio') 
+                            |   Single burn site
+                        label.container
+                            input#random-burn-radio(type='radio', name='radio', value='polygon', onclick='toggleControl(this)') 
+                            |   Random burn sites 
+                        br
+                        div#single-burn-coords
+                            br
+                            p Enter coordinates or click on the map
+                            table.table.borderless
+                                tbody
+                                    tr
+                                        td Latitude <br><br><input id='ignition-lat', name='ignition-lat', type='text', placeholder='e.g. 38.8375', required=''>
+                                        td Longitude <br><br><input id='ignition-lon', name='ignition-lon', type='text', placeholder='e.g. -120.8958', required=''> 
+                        div#random-burn-coords(style='display: none;')
+                            br
+                            p Enter coordinates or Ctrl/Cmd + Click &amp; Drag to draw a box on the map
+                            p North coordinate 
+                            input#lat-max(name='north-coord', type='text', placeholder='Latitude (max)')
                             br
                             br
-                            p Enter coordinates for single burn site or draw range on map for random burn sites
-                            br
-                            div#single-burn-coords
-                                div(style='display: table; padding-left: 10%;')
-                                    div(style='display: table-cell; padding-right: 2em')
-                                        p Latitude
-                                        input#ignition-row(name='ignition-row', type='text', placeholder='e.g. 38.8375', required='')
-                                    br
-                                    br
-                                    div(style='display: table-cell; padding-left: 5em;')
-                                        p Longitude 
-                                        input#ignition-col(name='ignition-col', type='text', placeholder='e.g. -120.8958', required='')
-                            div#random-burn-coords(style='display: none;')
-                                p North coordinate 
-                                input#lat-max(name='north-coord', type='text', placeholder='Lat / long')
-                                br
-                                br
-                                div(style='display: table; padding-left: 10%;')
-                                    div(style='display: table-cell; padding-right: 2em;')
-                                        p West coordinate
-                                        input#lon-min(name='west-coord', type='text', placeholder='Lat / long')
-                                    div(style='display: table-cell; padding-left: 5em;')
-                                        p East coordinate 
-                                        input#lon-max(name='east-coord', type='text', placeholder='Lat / long')
-                                br
-                                br
-                                p South coordinate
-                                input#lat-min(name='south-coord', type='text', placeholder='Lat / long')
-                                br
-                                br
-                            hr
-                            br
-                            p Values can be entered three ways:
-                            i  Scalar 
-                            |  | e.g. 60
-                            br
-                            i  Discrete sample set 
-                            |  | e.g. (50 65 80)
-                            br
-                            i  Continuous sample range 
-                            |  | e.g. [10 20] 
+                            table.table.borderless
+                                tbody
+                                    tr
+                                        td West coordinate <br><br><input id='lon-min', name='west-coord', type='text', placeholder='Longitude (min)'>
+                                        td East coordinate <br><br><input id='lon-max', name='east-coord', type='text', placeholder='Longitude (max)'>
+                            p South coordinate
+                            input#lat-min(name='south-coord', type='text', placeholder='Latitude (min)')
                             br
                             br
-                            p Max burn time (minutes)
-                            input#max-runtime(name='max-runtime', type='text', placeholder='e.g. 60', required='')
-                            br
-                            br
-                            div(style='display: table; padding-left: 10%;')
-                                div(style='display: table-cell; padding-right: 2em')
-                                    p Temperature (&deg;F)
-                                    input#temperature(name='temperature', type='text', placeholder='e.g. [60 90]', required='')
-                                br
-                                br
-                                div(style='display: table-cell; padding-left: 5em;')
-                                    p Relative humidity (%)
-                                    input#relative-humidity(name='relative-humidity', type='text', placeholder='e.g. (1 10 20)', required='')
-                            br
-                            br
-                            p Wind speed 20ft (miles/hour)
-                            input#wind-speed-20ft(name='wind-speed-20ft', type='text', placeholder='e.g. (10 15 20)', required='')
-                            br
-                            br
-                            p Wind direction (degrees clockwise from North)
-                            input#wind-from-direction(name='wind-from-direction', type='text', placeholder='e.g. (0 90 180 270)', required='')
-                            br
-                            br
-                            div(style='display: table; padding-left: 10%;')
-                                div(style='display: table-cell; padding-right: 2em')
-                                    p Foliar moisture (%)
-                                    input#foliar-moisture(name='foliar-moisture', type='text', placeholder='e.g. 90', required='')
-                                br
-                                br
-                                div(style='display: table-cell; padding-left: 5em;')
-                                    p Ellipse adjustment factor 
-                                    input#ellipse-adjustment-factor(name='ellipse-adjustment-factor', type='text', placeholder='e.g. 1.0', required='')
-                            br
-                            br
-                            div(style='display: table; padding-left: 10%;')
-                                div(style='display: table-cell; padding-right: 2em')
-                                    p Number of simulations
-                                    input#simulations(name='simulations', type='text', placeholder='e.g. 10', required='')
-                                br
-                                br
-                                div(style='display: table-cell; padding-left: 5em;')
-                                    p Random seed
-                                    input#random-seed(name='random-seed', type='text', placeholder='e.g. 1234567890', required='')
-                            br
-                            br
-                            input(type='submit', value='Send to EDN')
-                            br
-                            br
+                        hr
+                        br
+                        p Values can be entered three ways
+                        table.table.table-bordered(style='background-color: rgba(0, 0, 0, 0.1);')
+                            thead
+                                tr
+                                    th Type
+                                    th Description
+                                    th Example
+                            tbody
+                                tr
+                                    td Scalar
+                                    td Single value
+                                    td e.g. 60
+                                tr
+                                    td Discrete sample set
+                                    td Sample values in set <br> (2 or more values)
+                                    td e.g. (50 65 80)
+                                tr 
+                                    td Continuous sample range
+                                    td Sample in range of 2 numbers <br> [inclusive exclusive]
+                                    td e.g. [10 20]
+                        br
+                        br
+                        p Max burn time (minutes)
+                        input#max-runtime(name='max-runtime', type='text', placeholder='e.g. 60', required='')
+                        br
+                        br
+                        table.table.borderless
+                            tbody
+                                tr
+                                    td Temperature (&deg;F) <br><br><input id='temperature', name='temperature', type='text', placeholder='e.g. [60 90]', required=''>
+                                    td Relative humidity (%) <br><br><input id='relative-humidity', name='relative-humidity', type='text', placeholder='e.g. (1 10 20)', required=''>
+                        br
+                        p Wind speed 20ft (miles/hour)
+                        input#wind-speed-20ft(name='wind-speed-20ft', type='text', placeholder='e.g. (10 15 20)', required='')
+                        br
+                        br
+                        p Wind direction (degrees clockwise from North)
+                        input#wind-from-direction(name='wind-from-direction', type='text', placeholder='e.g. (0 90 180 270)', required='')
+                        br
+                        br
+                        table.table.borderless
+                            tbody
+                                tr
+                                    td Foliar moisture (%) <br><br><input id='foliar-moisture', name='foliar-moisture', type='text', placeholder='e.g. 90', required=''>
+                                    td Ellipse adjustment factor <br><br><input id='ellipse-adjustment-factor', name='ellipse-adjustment-factor', type='text', placeholder='e.g. 1.0', required=''>
+                        table.table.borderless
+                            tbody
+                                tr
+                                    td Number of simulations <br><br><input id='simulations', name='simulations', type='text', placeholder='e.g. 10', required=''>
+                                    td Random seed <br><br><input id='random-seed', name='random-seed', type='text', placeholder='e.g. 1234567890', required=''>
+                        br
+                        input(type='submit', value='Send to EDN', style='font-size: 16px;')
+                        br
+                        br
+                        br
 

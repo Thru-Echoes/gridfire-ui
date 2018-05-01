@@ -56,6 +56,15 @@ a {
 
 /* Form fields for model params */
 
+table.borderless td,table.borderless th {
+    border: none !important;
+}
+
+#formFields {
+    /*overflow-y: scroll;
+    height: 85%;*/
+}
+
 #formFieldsBtn {
     margin-top: 5px;
     right: 1%;
@@ -76,6 +85,9 @@ a {
     text-align: center;
     /*margin: 1px;*/
     will-change: contents,width;
+    overflow-y: scroll;
+    height: 70%;
+    width: 32%;
 }
 
 #userForm .form-group {

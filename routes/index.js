@@ -86,8 +86,8 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res) {
 
     /* Parameters for GridFire Clojure model 
-        ignition-row
-        ignition-col
+        ignition-lat
+        ignition-lon
         max-runtime
         temperature
         relative-humidity
@@ -102,8 +102,22 @@ router.post('/', function(req, res) {
     /* Send POST to .edn file for Clojure */
 
     try {
-        var ignitionRow = req.body['ignition-row'];
-        var ignitionCol = req.body['ignition-col'];
+
+        // Single vs random burn sites 
+        var isSingle = document.getElementById('single-burn-radio');  
+        var isRandom = document.getElementById('random-burn-radio');
+
+        console.log('\nisSingle.checked: ', isSingle.checked);
+        console.log('isRandom.checked: ', isRandom.checked);
+        console.log('\n\n');
+
+        var ignitionLat = req.body['ignition-lat'];
+        var ignitionLon = req.body['ignition-lon'];
+
+        var lonMin = req.body['lon-min'];
+        var lonMax = req.body['lon-max'];
+        var latMin = req.body['lat-min'];
+        var latMax = req.body['lat-max'];
 
         var maxRuntime = req.body['max-runtime'];
         var temperature = req.body['temperature'];
@@ -132,8 +146,8 @@ router.post('/', function(req, res) {
                                 edn.kw(":canopy-cover"), "clip.cc_" + session_id]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
-                                    edn.kw(":ignition-row"), eval(ignitionRow), 
-                                    edn.kw(":ignition-col"), eval(ignitionCol),
+                                    edn.kw(":ignition-row"), eval(ignitionLat), 
+                                    edn.kw(":ignition-col"), eval(ignitionLon),
                                     edn.kw(":max-runtime"), eval(maxRuntime),
                                     edn.kw(":temperature"), eval(temperature),
                                     edn.kw(":relative-humidity"), eval(relativeHumidity),
