@@ -6,28 +6,27 @@ Single-page web app with *Open Layers* map, using *Express* template engine and 
 
 Localhost at port **3000**. 
 
-## Notes 
+## User Interface
 
-Adding spatial data to PostgreSQL / PostGIS table: 
+Screenshots of the GridFire User Interface. Users can click the map to select the latitude and longitude for a single burn site or click-and-drag to create a box where random burn sites in the simulation. 
 
-```
-CREATE TABLE sample_layer
-(
-    gid serial NOT NULL,
-    lname character varying,
-    the_geom geometry,
-    CONSTRAINT sample_layer_pkey PRIMARY KEY (gid ),
-    CONSTRAINT enforce_dims_the_geom CHECK (st_ndims(the_geom) = 2),
-    CONSTRAINT enforce_srid_the_geom CHECK (st_srid(the_geom) = 4326)
-);
-```
+<br>
 
-Insert sample layers from [this post](http://denelius.com/ol3-node-postgis/) into our **sample_layer** table: 
+May 11, 2018 screenshot of the GridFire UI with single burn option in the parameter form: 
 
-```
-INSERT INTO sample_layer(lname, the_geom) values('polygons', '0106000020E610000002000000010300000001000000050000005A643BDF4F7D52C0917EFB3A70664440D712F241CF7E52C05F07CE19516244405F07CE19517E52C08BFD65F7E4614440696FF085C97C52C0F5B9DA8AFD6544405A643BDF4F7D52C0917EFB3A70664440010300000001000000040000005A643BDF4F7D52C0917EFB3A706644405F07CE19517E52C08BFD65F7E4614440696FF085C97C52C0F5B9DA8AFD6544405A643BDF4F7D52C0917EFB3A70664440');
- 
-INSERT INTO sample_layer(lname, the_geom) values('lines', '0105000020E610000004000000010200000002000000B97020240B7E52C0B8921D1B81644440EF552B137E7D52C0D5E76A2BF66344400102000000020000000F9C33A2B47D52C053793BC2696544409352D0ED257D52C03ECBF3E0EE644440010200000002000000EE08A7052F7E52C01CEBE2361A644440367689EAAD7D52C00F0BB5A679634440010200000002000000CA54C1A8A47E52C01092054CE06244402E56D4601A7E52C083DDB06D51624440');
- 
-INSERT INTO sample_layer(lname, the_geom) values('points', '0104000020E61000000400000001010000005A643BDF4F7D52C0917EFB3A706644400101000000696FF085C97C52C0F5B9DA8AFD65444001010000005F07CE19517E52C08BFD65F7E46144400101000000D712F241CF7E52C05F07CE1951624440');
-```
+<br>
+
+![Single burn site screenshot](public/images/ui_single_burn.png)
+
+<br><br>
+
+May 11, 2018 screenshot of the GridFire UI with random burns option in the parameter form:
+
+<br>
+
+![Random burn sites screenshot](public/images/ui_random_burns.png) 
+
+
+
+
+
