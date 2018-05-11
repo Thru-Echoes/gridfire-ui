@@ -8,7 +8,7 @@ body {
     padding: 0px;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
     /* Margin bottom to match footer height */
-    margin-bottom: 100px;
+    margin-bottom: 150px;
     background-color: rgba(52, 58, 64, 0.3);
 }
 
@@ -17,6 +17,10 @@ a {
 }
 
 /* Header */
+
+.bg-dark {
+    background-color: rgba(52, 58, 64, 0.6) !important;
+}
 
 #header {
     text-align: center;
@@ -170,9 +174,13 @@ table.borderless td,table.borderless th {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 100px;
+    height: 150px;
     line-height: 40px; /* Vertically centering text */
     color: #fff;
     left: 0;
     right: 0;
+}
+
+.bg-darker {
+    background-color: rgba(52, 58, 64, 1.0) !important;
 }
