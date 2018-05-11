@@ -8,10 +8,10 @@
                 fieldset
                     form#userForm(action='/', method='post')
                         label.container
-                            input#single-burn-radio(type='radio', checked='checked', name='radio') 
+                            input#single-burn-radio(type='radio', checked='checked', name='radio' value='isSingle') 
                             |   Single burn site
                         label.container
-                            input#random-burn-radio(type='radio', name='radio', value='polygon', onclick='toggleControl(this)') 
+                            input#random-burn-radio(type='radio', name='radio', value='isRandom') 
                             |   Random burn sites 
                         br
                         div#single-burn-coords
@@ -20,27 +20,27 @@
                             table.table.borderless
                                 tbody
                                     tr
-                                        td Latitude <br><br><input id='ignition-lat', name='ignition-lat', type='text', placeholder='e.g. 38.8375', required=''>
-                                        td Longitude <br><br><input id='ignition-lon', name='ignition-lon', type='text', placeholder='e.g. -120.8958', required=''> 
+                                        td Latitude <br><br><input id='ignition-lat', name='ignition-lat', type='text', placeholder='e.g. 38.8375'>
+                                        td Longitude <br><br><input id='ignition-lon', name='ignition-lon', type='text', placeholder='e.g. -120.8958'> 
                         div#random-burn-coords(style='display: none;')
                             br
                             p Enter coordinates or Ctrl/Cmd + Click &amp; Drag to draw a box on the map
                             p North coordinate 
-                            input#lat-max(name='north-coord', type='text', placeholder='Latitude (max)')
+                            input(name='lat-max', id='lat-max', type='text', placeholder='Latitude (max)')
                             br
                             br
                             table.table.borderless
                                 tbody
                                     tr
-                                        td West coordinate <br><br><input id='lon-min', name='west-coord', type='text', placeholder='Longitude (min)'>
-                                        td East coordinate <br><br><input id='lon-max', name='east-coord', type='text', placeholder='Longitude (max)'>
+                                        td West coordinate <br><br><input id='lon-min', name='lon-min', type='text', placeholder='Longitude (min)'>
+                                        td East coordinate <br><br><input id='lon-max', name='lon-max', type='text', placeholder='Longitude (max)'>
                             p South coordinate
-                            input#lat-min(name='south-coord', type='text', placeholder='Latitude (min)')
+                            input(id='lat-min', name='lat-min', type='text', placeholder='Latitude (min)')
                             br
                             br
                         hr
                         br
-                        p Values can be entered three ways
+                        p For all options in this section, <br> you may enter values in one of three ways
                         table.table.table-bordered(style='background-color: rgba(0, 0, 0, 0.1);')
                             thead
                                 tr
@@ -50,15 +50,15 @@
                             tbody
                                 tr
                                     td Scalar
-                                    td Single value
+                                    td Single value used for <br> all simulations
                                     td e.g. 60
                                 tr
                                     td Discrete sample set
-                                    td Sample values in set <br> (2 or more values)
+                                    td Sample values in set <br> (2 or more values) <br> sampled each simulation
                                     td e.g. (50 65 80)
                                 tr 
                                     td Continuous sample range
-                                    td Sample in range of 2 numbers <br> [inclusive exclusive]
+                                    td Sample in range of 2 numbers <br> [inclusive exclusive] <br> sampled each simulation
                                     td e.g. [10 20]
                         br
                         br

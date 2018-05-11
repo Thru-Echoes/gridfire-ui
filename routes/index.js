@@ -26,6 +26,150 @@ var edn = require('jsedn');
 var pg = require("pg");
 // var connectPostgres = "postgres://USERNAME:PASSWORD@127.0.0.1/dbname";
 
+var checkVals = function (val) { 
+
+    /*var valOut;
+    var valLength = val.length;
+    var valAcc = '';
+
+    try {
+        if (val[0] == '[') {
+            console.log('val is array...');    
+        } else if (val[0] == '(') {
+            console.log('val is list...');
+        } else {
+            console.log('val is scalar...');
+            valOut = JSON.parse(val);
+        }
+    } catch(err) {
+        valOut = 'Error in checkVals(val)';
+    }
+
+    console.log('---------\n');
+
+    return valOut;*/
+
+    console.log('\n!!!!!!!!!! checkVals()');
+    console.log('param: ', val);
+    console.log('!!!!!!!!!\n');
+
+    var tryVal = getFormType(val);
+
+    return tryVal;
+}
+
+var getStringElements = function (val, valAcc = '') {
+    if (val.length == 0) {
+         return valAcc;	
+    } else {
+        if ((val[0] == '[') || (val[0] == '(')) {
+               valAcc += val[0];
+               return getStringElements(val.substring(1), valAcc = valAcc);
+        } else if ((val[0] == ']') || (val[0] == ')')) {
+               valAcc += val[0];
+               return getStringElements(val.substring(1), valAcc = valAcc);
+        } else if (val[0] == " ") {
+             valAcc += ",";
+            return getStringElements(val.substring(1), valAcc = valAcc);
+        } else {
+            valAcc += val[0];
+            return getStringElements(val.substring(1), valAcc = valAcc);
+        }
+    }
+}
+
+function getFormType (form) {
+    var tryList = isValidList(form);
+    var tryVector = isValidVector(form);
+    var tryScalar = isValidScalar(form);
+
+    var tryValidator = validateEdnInput(form);
+
+    console.log('\n\n++++++++++++++++\nWithin getFormType()...');
+    console.log('tryList: ', tryList);
+    console.log('tryVector: ', tryVector);
+    console.log('tryScalar: ', tryScalar);
+    console.log('tryValidator: ', tryValidator);
+    console.log('++++++++++++++\n');
+
+    var newForm = form; 
+
+    if (tryScalar == true) {
+        newForm = JSON.parse(form);
+    }
+
+    return newForm; 
+}
+
+// Gary code for POST validation - return TRUE / FALSE 
+
+function isValidList (form) {
+    return typeof form == "object" &&
+        !Array.isArray(form) &&
+        Object.keys(form).length == 1 &&
+        Object.keys(form)[0] == "List" &&
+        form["List"].length > 0 &&
+        form["List"].every(function (x) { return typeof x == "number";});
+}
+
+function isValidVector (form) {
+    return typeof form == "object" &&
+        !Array.isArray(form) &&
+        Object.keys(form).length == 1 &&
+        Object.keys(form)[0] == "Vector" &&
+        form["Vector"].length == 2 &&
+        form["Vector"].every(function (x) { return typeof x == "number";});
+}
+
+function isValidScalar (form) {
+    var newForm = JSON.parse(form);
+    //return typeof form == "number";
+    return typeof newForm == "number";
+}
+
+function validateEdnInput (input) {
+    /*var form = edn.encodeJson(edn.parse(input));
+    return isValidList(form) || isValidVector(form) || isValidScalar(form);*/
+
+    //var form = edn.encodeJson(edn.parse(input));
+    var parseInput = edn.parse(input);
+    var encodeInput = edn.encodeJson(parseInput);
+
+    var tmpParse; 
+    var form; 
+
+    try {
+
+        console.log('\n------------------\nWithin validateEdnInput try()');
+        console.log('input: ', input);
+
+        tmpParse = edn.parse(input);
+
+        console.log('edn.parse(input): ', edn.parse(input));
+
+        form = edn.encodeJson(tmpParse);
+
+        console.log('edn.encodeJson(tmpParse): ', edn.encodeJson(tmpParse));
+        console.log('----------------\n\n');
+
+    } catch (err) {
+
+        console.log('\n------------------\nWithin validateEdnInput catch()');
+        console.log('input: ', input);
+        console.log('edn.encodeJson(input): ', edn.encodeJson(input));
+        console.log('------------------\n\n');
+
+        form = edn.encodeJson(input);
+    }
+
+    console.log('\n......................\n In validateEdnInput()');
+    console.log('parseInput: ', parseInput);
+    console.log('encodeInput: ', encodeInput);
+    console.log('...................\n');
+
+    return isValidList(form) || isValidVector(form) || isValidScalar(form);
+}
+
 // SQL for PostGIS
 
 /*
@@ -104,20 +248,28 @@ router.post('/', function(req, res) {
     try {
 
         // Single vs random burn sites 
-        var isSingle = document.getElementById('single-burn-radio');  
-        var isRandom = document.getElementById('random-burn-radio');
+        var checkRadio = req.body.radio;
+        var ignitionLat = '';
+        var ignitionLon = '';
+        var lonMin = '';
+        var lonMax = '';
+        var latMin = '';
+        var latMax = '';
 
-        console.log('\nisSingle.checked: ', isSingle.checked);
-        console.log('isRandom.checked: ', isRandom.checked);
-        console.log('\n\n');
+        if (checkRadio == 'isSingle') {
+            ignitionLat = req.body['ignition-lat'];
+            ignitionLon = req.body['ignition-lon'];
+        } else {
 
-        var ignitionLat = req.body['ignition-lat'];
-        var ignitionLon = req.body['ignition-lon'];
+            lonMin = req.body['lon-min'];
+            lonMax = req.body['lon-max'];
+            latMin = req.body['lat-min'];
+            latMax = req.body['lat-max'];
 
-        var lonMin = req.body['lon-min'];
-        var lonMax = req.body['lon-max'];
-        var latMin = req.body['lat-min'];
-        var latMax = req.body['lat-max'];
+            ignitionLat = latMin + ',' + latMax;
+            ignitionLon = lonMin + ',' + lonMax; 
+
+        }
 
         var maxRuntime = req.body['max-runtime'];
         var temperature = req.body['temperature'];
@@ -128,6 +280,18 @@ router.post('/', function(req, res) {
         var ellipseAdjustmentFactor = req.body['ellipse-adjustment-factor'];
         var simulations = req.body['simulations'];
         var randomSeed = req.body['random-seed'];
+
+        /*console.log('\nmaxRuntime: ', maxRuntime);
+        console.log('temperature: ', temperature);
+
+        var temperatureMod = getStringElements(temperature);
+        var relativeHumidityMod = getStringElements(relativeHumidity);
+
+        console.log('temperatureMod: ', temperatureMod);
+        console.log('relativeHumidity: ', relativeHumidity);
+        console.log('relativeHumidityMod: ', relativeHumidityMod);*/
+
+        console.log('\nPulled all variables from req.body...\n');
 
         // Convert JS to EDN object (Map) 
         var ednMap = new edn.Map([edn.kw(":db-spec"), 
@@ -146,17 +310,28 @@ router.post('/', function(req, res) {
                                 edn.kw(":canopy-cover"), "clip.cc_" + session_id]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
-                                    edn.kw(":ignition-row"), eval(ignitionLat), 
-                                    edn.kw(":ignition-col"), eval(ignitionLon),
-                                    edn.kw(":max-runtime"), eval(maxRuntime),
-                                    edn.kw(":temperature"), eval(temperature),
-                                    edn.kw(":relative-humidity"), eval(relativeHumidity),
-                                    edn.kw(":wind-speed-20ft"), eval(windSpeed20ft),
-                                    edn.kw(":wind-from-direction"), eval(windFromDirection),
-                                    edn.kw(":foliar-moisture"), eval(foliarMoisture),
-                                    edn.kw(":ellipse-adjustment-factor"), eval(ellipseAdjustmentFactor),
-                                    edn.kw(":simulations"), eval(simulations),
-                                    edn.kw(":random-seed"), eval(randomSeed),
+                                    /*edn.kw(":ignition-row"), checkVals(ignitionLat), 
+                                    edn.kw(":ignition-col"), checkVals(ignitionLon),
+                                    edn.kw(":max-runtime"), checkVals(maxRuntime),
+                                    edn.kw(":temperature"), checkVals(temperature),
+                                    edn.kw(":relative-humidity"), checkVals(relativeHumidity),
+                                    edn.kw(":wind-speed-20ft"), checkVals(windSpeed20ft),
+                                    edn.kw(":wind-from-direction"), checkVals(windFromDirection),
+                                    edn.kw(":foliar-moisture"), checkVals(foliarMoisture),
+                                    edn.kw(":ellipse-adjustment-factor"), checkVals(ellipseAdjustmentFactor),
+                                    edn.kw(":simulations"), checkVals(simulations),
+                                    edn.kw(":random-seed"), checkVals(randomSeed),*/
+                                    edn.kw(":ignition-row"), ignitionLat, 
+                                    edn.kw(":ignition-col"), ignitionLon,
+                                    edn.kw(":max-runtime"), maxRuntime,
+                                    edn.kw(":temperature"), temperature,
+                                    edn.kw(":relative-humidity"), relativeHumidity,
+                                    edn.kw(":wind-speed-20ft"), windSpeed20ft,
+                                    edn.kw(":wind-from-direction"), windFromDirection,
+                                    edn.kw(":foliar-moisture"), foliarMoisture,
+                                    edn.kw(":ellipse-adjustment-factor"), ellipseAdjustmentFactor,
+                                    edn.kw(":simulations"), simulations,
+                                    edn.kw(":random-seed"), randomSeed,
                                     edn.kw(":outfile-suffix"), "_tile_100",
                                     edn.kw(":output-landfire-inputs?"), true,
                                     edn.kw(":output-geotiffs?"), true,
