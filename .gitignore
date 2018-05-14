@@ -11,7 +11,7 @@ sample_params.edn
 public/example.sql
 
 # .tif LANDFIRE data
-geotiff_data/.
+geotiff_data/
 
 # Ignore native extensions and npm rebuild changes in node_modules/
 node_modules/**/*.node
