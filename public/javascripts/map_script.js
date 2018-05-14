@@ -1,15 +1,22 @@
 $( document ).ready(function() {
     // Layers for OpenLayers map
-    var layerConfigs = [{title: 'DigitalGlobeRecentImagery',
-    extent: null,
-    sourceConfig: {type: 'DigitalGlobe',
-                    imageryId: 'digitalglobe.nal0g75k',
-                    accessToken: 'pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNqM2RuZTE3dTAwMncyd3Bwanh4MHJ1cmgifQ.LNrR2h_I0kz6fra93XGP2g'}},
-    {title: 'DigitalGlobeRecentImagery+Streets',
-    extent: null,
-    sourceConfig: {type: 'DigitalGlobe',
-                    imageryId: 'digitalglobe.nal0mpda',
-                    accessToken: 'pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNqM2RuZTE3dTAwMncyd3Bwanh4MHJ1cmgifQ.LNrR2h_I0kz6fra93XGP2g'}}];
+    var layerConfigs = [
+        {title: 'DigitalGlobeRecentImagery',
+            extent: null,
+            sourceConfig: {
+                type: 'DigitalGlobe',
+                imageryId: 'digitalglobe.nal0g75k',
+                accessToken: 'pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNqM2RuZTE3dTAwMncyd3Bwanh4MHJ1cmgifQ.LNrR2h_I0kz6fra93XGP2g'
+            }
+        },
+        {title: 'DigitalGlobeRecentImagery+Streets',
+            extent: null,
+            sourceConfig: {
+                type: 'DigitalGlobe',
+                imageryId: 'digitalglobe.nal0mpda',
+                accessToken: 'pk.eyJ1IjoiZGlnaXRhbGdsb2JlIiwiYSI6ImNqM2RuZTE3dTAwMncyd3Bwanh4MHJ1cmgifQ.LNrR2h_I0kz6fra93XGP2g'
+            }
+    }];
 
     // Initialize OpenLayers map
     var mapConfig = mercator.createMap('map', [-120.8958, 38.8375], 6, layerConfigs);
@@ -44,5 +51,36 @@ $( document ).ready(function() {
         lonDiv.value = newCoords[0];
     }
     mapConfig.map.on('click', onMapClick);
+
+    /**********************************************************
+
+    // TODO: 8 LANDFIRE GeoTIFF as layers on map 
+
+
+
+    // TODO: raster2pgsql to load 8 LANDFIRE layers into local
+    //              PostgreSQL database (gridfire) 
+
+
+
+    // TODO: SQL clips 8 LANDFIRE layers from box drawn on map 
+    //          stores clips as VIEWS (see example SQL)
+
+
+
+    // TODO: Use LayerSwitcher widget, enable on map 
+
+    *********************************************************/
+
+    // LayerSwitcher widget (walkermatt's ol-layerswitcher)
+
+    //mapConfig.map.addLayer(new ol.Layer.OSM());
+
+    /*var layerSwitcher = new.ol.control.LayerSwitcher({
+        tipLabel: 'Example label'
+    });
+    mapConfig.map.addControl(layerSwitcher);*/
+
+
 });
 

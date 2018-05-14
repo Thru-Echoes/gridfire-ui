@@ -10,6 +10,9 @@ sample_params.edn
 # .sql example file for dev purposes 
 public/example.sql
 
+# .tif LANDFIRE data
+geotiff_data/.
+
 # Ignore native extensions and npm rebuild changes in node_modules/
 node_modules/**/*.node
 node_modules/**/*.o
