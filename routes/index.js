@@ -35,7 +35,8 @@ var generate_session_id = function() {
     return sha.digest('hex');
 }
 
-var session_id = generate_session_id();
+var full_session_id = generate_session_id();
+var session_id = full_session_id.substring(0, 20);
 
 console.log("\n----------\nSession_id for this user: ", session_id);
 console.log("\n\n"); 
@@ -88,17 +89,23 @@ async function getGeoPointQuery(geoPoint) {
     console.log("\n\n");
 }
 
-async function getCreateViewQuery(tableName, geoPolygon) {
+//async function getCreateViewQuery(tableName, geoPolygon) {
+async function getCreateViewQuery(tableName, lonMin, lonMax, latMin, latMax) {
 
     console.log("\n\nWithin getCreateViewQuery()");
-    console.log("geoPolygon: ", geoPolygon);
-    console.log("\n\n");
+    console.log("lonMin: ", lonMin);
+    console.log("lonMax: ", lonMax);
+    console.log("latMin: ", latMin);
+    console.log("latMax: ", latMax);
 
-    const { rows } = await query("CREATE VIEW clips." + tableName + "_" + session_id + " AS \
-                                    WITH geom AS ST_GeomFromGeoJSON('" + geoPolygon + "') \
-                                        SELECT ST_Union(ST_Clip(rast, geom)) AS rast \
-                                        FROM landfire." + tableName + 
-                                        "WHERE ST_Intersects(rast, geom);");
+    var queryTxt = "CREATE VIEW clips." + tableName + "_" + session_id + " AS \n" +
+                   "    WITH polygon AS (SELECT ST_Transform(ST_MakeEnvelope(" + lonMin + "," + latMin + "," + lonMax + "," + latMax + ",4326), 900914) AS geom) \n" +
+                   "        SELECT ST_Union(ST_Clip(rast, geom)) AS rast \n" +
+                   "            FROM landfire." + tableName + "\n" +
+                   "            CROSS JOIN polygon \n" + 
+                   "            WHERE ST_Intersects(rast, geom);";
+
+    const { rows } = await query(queryTxt);
 
     console.log("\nWithin getCreateViewQuery()");
     console.log("JSON.stringify(rows): ", JSON.stringify(rows));
@@ -232,19 +239,16 @@ router.post('/', function(req, res) {
             var latMaxParse = JSON.parse(latMax);
             var lonMinParse = JSON.parse(lonMin);
             var lonMaxParse = JSON.parse(lonMax);  
-            var tableName = 'ch';
-            var geoArray = [
-                [latMinParse, lonMinParse],
-                [latMinParse, lonMaxParse],
-                [latMaxParse, lonMinParse],
-                [latMaxParse, lonMaxParse]
-            ];
-            var geoPolygon = geotools.toGeoJSON(geoArray, 'polygon');
+            
+            var tableNames = ['asp', 'cbd', 'cbh', 'cc', 'ch', 'fbfm40', 'slp'];
 
-            console.log("\nIn POST: geoPolygon: ", geoPolygon);
-            console.log("\n");
+            tableNames.forEach(
+                function (tableName) {
+                    getCreateViewQuery(tableName, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+                }
+            );
 
-            getCreateViewQuery(tableName, geoPolygon);
+            //getCreateViewQuery(tableName, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
 
         }
 
@@ -316,3 +320,31 @@ router.post('/', function(req, res) {
 })
 
 module.exports = router;
+
+/* 
+
+// See clips 
+\dv clips.
+
+// Drop clips 
+DROP VIEW clips.ch_0747edad5a9a49e66ee14a2339e9769b983f82aca2dde73b79465b74df91;
+
+// Check out clips 
+SELECT ST_AsText(ST_Envelope(rast)) FROM clips.ch_42459c3530f6eb22a4bf;
+
+// Check out summarystats of clips 
+SELECT (ST_SummaryStats(rast)).* FROM clips.ch_42459c3530f6eb22a4bf;
+
+// Check projection 
+SELECT ST_SRID(rast) AS foo FROM landfire.ch LIMIT 10;
+
+// Change projection
+SELECT ST_SRID(rast) AS foo FROM landfire.ch LIMIT 10;
+
+// Reproject all rasters 
+for LAYER in asp cbh cc fbfm40 slp
+    do psql -U kschocz -d gridfire -c \
+        "SELECT UpdateRasterSRID('landfire'::name,'$LAYER'::name,'rast'::name,900914);" &
+    done
+
+*/ 
