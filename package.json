@@ -14,6 +14,7 @@
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "fs": "0.0.1-security",
+    "geojson-tools": "^0.2.2",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jquery": "^3.3.1",

@@ -3,7 +3,29 @@ var router = express.Router();
 var fs = require('fs');
 var jsdom = require('jsdom');
 var $ = require('jquery')(new jsdom.JSDOM().window);
+var geotools = require('geojson-tools');
 
+/*****************************************************/
+// Debugging 
+const debugHttpIn = require('debug')('http:incoming');
+const debugHttpOut = require('debug')('http:outgoing');
+
+let outRequest = {
+    url: 'localhost'
+}
+
+debugHttpOut('Request sent to %s ', outRequest.url);
+
+let inRequest = {
+    body: '{"status": "ok"}'
+}
+
+debugHttpOut('Receive body %s ', inRequest.body);
+
+// start with: 
+// $ DEBUG=http:incoming,http:outgoing npm start
+
+/*****************************************************/
 // Unique session id 
 var crypto = require('crypto');
 
@@ -54,12 +76,34 @@ async function getQuery () {
     console.log("\n\n");
 }
 
+async function getGeoPointQuery(geoPoint) {
+
+    // Extract GeoJSON point as text
+    var queryTxt = "SELECT ST_AsText(ST_GeomFromGeoJSON('" + geoPoint + "')) AS wkt;";
+    //const { rows } = await query("SELECT ST_AsText(ST_GeomFromGeoJSON(" + geoPoint + ")) AS wkt;");
+    const { rows } = await query(queryTxt);
+
+    console.log("\nWithin getGeoPointQuery()");
+    console.log("JSON.stringify(rows): ", JSON.stringify(rows));
+    console.log("\n\n");
+}
+
 async function getCreateViewQuery(tableName, geoPolygon) {
+
+    console.log("\n\nWithin getCreateViewQuery()");
+    console.log("geoPolygon: ", geoPolygon);
+    console.log("\n\n");
+
     const { rows } = await query("CREATE VIEW clips." + tableName + "_" + session_id + " AS \
-                                    WITH geom AS ST_GeomFromGeoJSON(" + geoPolygon + ") \
+                                    WITH geom AS ST_GeomFromGeoJSON('" + geoPolygon + "') \
                                         SELECT ST_Union(ST_Clip(rast, geom)) AS rast \
                                         FROM landfire." + tableName + 
                                         "WHERE ST_Intersects(rast, geom);");
+
+    console.log("\nWithin getCreateViewQuery()");
+    console.log("JSON.stringify(rows): ", JSON.stringify(rows));
+    console.log("\n\n");
+    
     // SQL for PostGIS
 
     /*
@@ -140,7 +184,7 @@ function validateEdnInput (input) {
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    // Postgres query 
+    // Simple Postgres query 
     getQuery();
 
     res.render('index', { title: 'GridFire Interface', error: null });
@@ -150,23 +194,6 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res) {
 
     console.log("\n\nIn POST event");
-    console.log("req.method: ", req.method);
-    console.log("req.body: ", req.body);
-    console.log("\n\n");
-
-    /* Parameters for GridFire Clojure model 
-        ignition-lat
-        ignition-lon
-        max-runtime
-        temperature
-        relative-humidity
-        wind-speed-20ft
-        wind-from-direction
-        foliar-moisture
-        ellipse-adjustment-factor
-        simulations
-        random-seed
-    */
 
     /* Send POST to .edn file for Clojure */
 
@@ -184,6 +211,12 @@ router.post('/', function(req, res) {
         if (checkRadio == 'isSingle') {
             ignitionLat = req.body['ignition-lat'];
             ignitionLon = req.body['ignition-lon'];
+
+            // Postgres: get point as text from GeoJSON
+            var exGeoPoint = '{"type":"Point","coordinates":[-48.23456,20.12345]}';
+            var geoPoint = '{"type":"Point","coordinates":[' + ignitionLon + ',' + ignitionLat + ']}';
+            getGeoPointQuery(geoPoint);
+
         } else {
 
             lonMin = req.body['lon-min'];
@@ -192,7 +225,26 @@ router.post('/', function(req, res) {
             latMax = req.body['lat-max'];
 
             ignitionLat = latMin + ',' + latMax;
-            ignitionLon = lonMin + ',' + lonMax; 
+            ignitionLon = lonMin + ',' + lonMax;
+            
+            // Postgres: create view with geoPolygon
+            var latMinParse = JSON.parse(latMin);
+            var latMaxParse = JSON.parse(latMax);
+            var lonMinParse = JSON.parse(lonMin);
+            var lonMaxParse = JSON.parse(lonMax);  
+            var tableName = 'ch';
+            var geoArray = [
+                [latMinParse, lonMinParse],
+                [latMinParse, lonMaxParse],
+                [latMaxParse, lonMinParse],
+                [latMaxParse, lonMaxParse]
+            ];
+            var geoPolygon = geotools.toGeoJSON(geoArray, 'polygon');
+
+            console.log("\nIn POST: geoPolygon: ", geoPolygon);
+            console.log("\n");
+
+            getCreateViewQuery(tableName, geoPolygon);
 
         }
 
@@ -205,8 +257,6 @@ router.post('/', function(req, res) {
         var ellipseAdjustmentFactor = req.body['ellipse-adjustment-factor'];
         var simulations = req.body['simulations'];
         var randomSeed = req.body['random-seed'];
-
-        console.log('\nPulled all variables from req.body...\n');
 
         // Convert JS to EDN object (Map) 
         var ednMap = new edn.Map([edn.kw(":db-spec"), 
@@ -242,9 +292,6 @@ router.post('/', function(req, res) {
                                     edn.kw(":output-geotiffs?"), true,
                                     edn.kw(":output-pngs?"), true,
                                     edn.kw(":output-csvs?"), true]);
-
-        console.log("\nednMap: ", ednMap);
-        console.log("+++++++++++++++++++\n");
 
         // Encode EDN Map
         var ednObj = edn.encode(ednMap);
