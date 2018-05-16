@@ -27,7 +27,7 @@ var edn = require('jsedn');
 const pg = require("pg");
 
 var config = {
-    user: 'kschocz',
+    user: 'gridfire',
     database: 'gridfire',
     password: '',
     host: 'localhost',
