@@ -54,15 +54,6 @@ $( document ).ready(function() {
 
     /**********************************************************
 
-    // TODO: 8 LANDFIRE GeoTIFF as layers on map 
-
-
-
-    // TODO: raster2pgsql to load 8 LANDFIRE layers into local
-    //              PostgreSQL database (gridfire) 
-
-
-
     // TODO: SQL clips 8 LANDFIRE layers from box drawn on map 
     //          stores clips as VIEWS (see example SQL)
 

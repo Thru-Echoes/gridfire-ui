@@ -91,6 +91,9 @@
                                     td Number of simulations <br><br><input id='simulations', name='simulations', type='text', placeholder='e.g. 10', required=''>
                                     td Random seed <br><br><input id='random-seed', name='random-seed', type='text', placeholder='e.g. 1234567890', required=''>
                         br
+                        div(id='invalid-input', style='font-size: 14px;')
+                            p #{error} 
+                        br
                         input(type='submit', value='Send to EDN', style='font-size: 16px;')
                         br
                         br

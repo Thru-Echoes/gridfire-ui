@@ -50,10 +50,6 @@ a {
     padding: 30px;
 }*/
 
-#btmMap {
-    /*height: 20px;*/
-}
-
 .ol-attribution.ol-logo-only {
     bottom: 1.4em;
 }
@@ -62,11 +58,6 @@ a {
 
 table.borderless td,table.borderless th {
     border: none !important;
-}
-
-#formFields {
-    /*overflow-y: scroll;
-    height: 85%;*/
 }
 
 #formFieldsBtn {
@@ -90,12 +81,8 @@ table.borderless td,table.borderless th {
     /*margin: 1px;*/
     will-change: contents,width;
     overflow-y: scroll;
-    height: 70%;
+    height: 60%;
     width: 32%;
-}
-
-#userForm .form-group {
-    /*text-align: right;*/
 }
 
 .go-right {
