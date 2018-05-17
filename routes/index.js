@@ -263,18 +263,13 @@ router.post('/', function(req, res) {
             var lonMinParse = JSON.parse(lonMin);
             var lonMaxParse = JSON.parse(lonMax);
 
-            createViews(sessionId, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+            var dims = createViews(sessionId, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
             
-            if (hMax == '') {
-                ignitionLat = latMin + ',' + latMax;
-                ignitionLon = lonMin + ',' + lonMax;
-            } else {
-                ignitionLat = '[0 ' + hMax + ']';
-                ignitionLon = '[0 ' + wMax + ']';
-            }
+            ignitionRow = '[0 ' + dims.height + ']';
+            ignitionCol = '[0 ' + dims.width + ']';
 
-            console.log("\nignitionLat: ", ignitionLat);
-            console.log("ignitionLon: ", ignitionLon);
+            console.log("\nignitionRow: ", ignitionRow);
+            console.log("ignitionCol: ", ignitionCol);
             console.log("\n");
         }
 
@@ -305,8 +300,8 @@ router.post('/', function(req, res) {
                                 edn.kw(":canopy-cover"), "clip.cc_" + session_id]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
-                                    edn.kw(":ignition-row"), checkVals(ignitionLat), 
-                                    edn.kw(":ignition-col"), checkVals(ignitionLon),
+                                    edn.kw(":ignition-row"), checkVals(ignitionRow), 
+                                    edn.kw(":ignition-col"), checkVals(ignitionCol),
                                     edn.kw(":max-runtime"), checkVals(maxRuntime),
                                     edn.kw(":temperature"), checkVals(temperature),
                                     edn.kw(":relative-humidity"), checkVals(relativeHumidity),
