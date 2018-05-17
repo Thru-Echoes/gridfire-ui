@@ -61,9 +61,23 @@ var config = {
 
 const pool = new pg.Pool(config);
 
+// Max height and max width for ignition-row and ignition-col
+var wMax = '';
+var hMax = '';
+var maxHeight; 
+var maxWidth;
+
 // async query 
 
 async function query (q) {
+    /*const client = await pool.connect();
+    try {
+        let res = await client.query(q);
+    } finally {
+        client.release();
+    }
+    //return res;*/
+
     const client = await pool.connect();
     let res = await client.query(q);
     client.release();
@@ -71,10 +85,12 @@ async function query (q) {
 }
 
 async function getQuery () {
+
     const { rows } = await query("SELECT count(*) FROM landfire.ch;");
-    console.log("\n\nWithin getQuery()");
+    /*console.log("\n\nWithin getQuery()");
     console.log("JSON.stringify(rows): ", JSON.stringify(rows));
-    console.log("\n\n");
+    console.log("\n\n");*/
+    
 }
 
 async function getGeoPointQuery(geoPoint) {
@@ -92,12 +108,6 @@ async function getGeoPointQuery(geoPoint) {
 //async function getCreateViewQuery(tableName, geoPolygon) {
 async function getCreateViewQuery(tableName, lonMin, lonMax, latMin, latMax) {
 
-    console.log("\n\nWithin getCreateViewQuery()");
-    console.log("lonMin: ", lonMin);
-    console.log("lonMax: ", lonMax);
-    console.log("latMin: ", latMin);
-    console.log("latMax: ", latMax);
-
     var queryTxt = "CREATE VIEW clips." + tableName + "_" + session_id + " AS \n" +
                    "    WITH polygon AS (SELECT ST_Transform(ST_MakeEnvelope(" + lonMin + "," + latMin + "," + lonMax + "," + latMax + ",4326), 900914) AS geom) \n" +
                    "        SELECT ST_Union(ST_Clip(rast, geom)) AS rast \n" +
@@ -107,40 +117,40 @@ async function getCreateViewQuery(tableName, lonMin, lonMax, latMin, latMax) {
 
     const { rows } = await query(queryTxt);
 
-    console.log("\nWithin getCreateViewQuery()");
-    console.log("JSON.stringify(rows): ", JSON.stringify(rows));
-    console.log("\n\n");
-    
-    // SQL for PostGIS
+    if (tableName == 'ch') {
 
-    /*
-    -- CREATE VIEW schema.table (~= namespace/var in Clojure)
-    -- e.g. clips = schema, canpoy_height = table 
-    -- CREATE VIEW => non-caches, run everytime (non-memoized)
-    -- CREATE TABLE => caches (memoized)
-    CREATE VIEW clips.<table_name>_<session_id> AS
-    -- Create vars | Need to convert string to PostGIS geometry obj
-    WITH geom AS ST_GeomFromGeoJSON(<geojson_polygon>)
-        -- ST_Clip applies to each tile
-        -- ST_Union aggregates (union) all clipped tiles into 1 tile
-        SELECT ST_Union(ST_Clip(rast, geom)) AS rast
-        -- landfire.<table_name> sequence of maps {:rid int :rast raster}
-        FROM landfire.<table_name>
-        WHERE ST_Intersects(rast, geom);
-        -- LIMIT 10; -- same Clojure (take 10)
-        -- WHERE => Clojure (filter ST_Intersects())
-        -- FROM => sequence generator
-        -- ORDER BY => Clojure (sort) or (sort-by)
-        -- e.g. ORDER BY <field> (age)
-        -- WITH => (Clojure let) bind names to exp [sequence calls]
-        -- CREATE => (Clojure def)
-        -- SELECT => (Clojure Map or Reduce)
+        var wQueryTxt = "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + session_id + ";";
+        //const { wRows } = await query(wQueryTxt);
+        var wRes = await query(wQueryTxt);
+        wMax = wRes['rows'][0]['width'];
+        console.log("\nwMax: ", wMax);
+        console.log("\n");
 
-    -- raster2pgsql -t width x height (-t = tiles raster)
-    -- one CREATE VIEW for each LANDFIRE layer
-    -- Within .edn file calls clips.canopy_height_<session_id>
-    */
+        var hQueryTxt = "SELECT ST_Height(rast) AS height FROM clips." + tableName + "_" + session_id + ";";
+        var hRes = await query(hQueryTxt);
+        hMax = hRes['rows'][0]['height'];
+        console.log("\nhMax: ", hMax);
+        console.log("\n");
+
+        //return [hMax, wMax];
+    }
 }
+
+/*async function getHeightQuery (tableName) {
+    var hQueryTxt = "SELECT ST_Height(rast) AS height FROM clips." + tableName + "_" + session_id + ";";
+    var hRes = await query(hQueryTxt);
+    var hMax = hRes['rows'][0]['height'];
+    console.log("\nhMax: ", hMax);
+    console.log("\n");
+}
+
+async function getWidthQuery (tableName) {
+    var wQueryTxt = "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + session_id + ";";
+    var wRes = await query(wQueryTxt);
+    var wMax = wRes['rows'][0]['width'];
+    console.log("\nwMax: ", wMax);
+    console.log("\n");
+}*/
 
 /*****************************************************/
 // Check user params for EDN 
@@ -224,6 +234,13 @@ router.post('/', function(req, res) {
             var geoPoint = '{"type":"Point","coordinates":[' + ignitionLon + ',' + ignitionLat + ']}';
             getGeoPointQuery(geoPoint);
 
+            /*var getHeight = getHeightQuery('ch');
+            var getWidth = getWidthQuery('ch');
+
+            console.log("\n\ngetHeight: ", getHeight);
+            console.log("getWidth: ", getWidth);
+            console.log("\n\n");*/
+
         } else {
 
             lonMin = req.body['lon-min'];
@@ -231,16 +248,20 @@ router.post('/', function(req, res) {
             latMin = req.body['lat-min'];
             latMax = req.body['lat-max'];
 
-            ignitionLat = latMin + ',' + latMax;
-            ignitionLon = lonMin + ',' + lonMax;
+            //ignitionLat = latMin + ',' + latMax;
+            //ignitionLon = lonMin + ',' + lonMax;
             
             // Postgres: create view with geoPolygon
             var latMinParse = JSON.parse(latMin);
             var latMaxParse = JSON.parse(latMax);
             var lonMinParse = JSON.parse(lonMin);
-            var lonMaxParse = JSON.parse(lonMax);  
+            var lonMaxParse = JSON.parse(lonMax);
             
-            var tableNames = ['asp', 'cbd', 'cbh', 'cc', 'ch', 'fbfm40', 'slp'];
+            // Need to call ST_Width + ST_Height on just 1 raster
+            var chTable = 'ch';
+            getCreateViewQuery(chTable, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+            
+            var tableNames = ['asp', 'cbd', 'cbh', 'cc', 'fbfm40', 'slp'];
 
             tableNames.forEach(
                 function (tableName) {
@@ -248,8 +269,17 @@ router.post('/', function(req, res) {
                 }
             );
 
-            //getCreateViewQuery(tableName, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+            if (hMax == '') {
+                ignitionLat = latMin + ',' + latMax;
+                ignitionLon = lonMin + ',' + lonMax;
+            } else {
+                ignitionLat = '[0 ' + hMax + ']';
+                ignitionLon = '[0 ' + wMax + ']';
+            }
 
+            console.log("\nignitionLat: ", ignitionLat);
+            console.log("ignitionLon: ", ignitionLon);
+            console.log("\n");
         }
 
         var maxRuntime = req.body['max-runtime'];
