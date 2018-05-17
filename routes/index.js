@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs');
-var jsdom = require('jsdom');
-var $ = require('jquery')(new jsdom.JSDOM().window);
-var geotools = require('geojson-tools');
+const express = require('express');
+const fs = require('fs');
+const pg = require("pg");
+const crypto = require('crypto');
+const edn = require('jsedn');
+
+const router = express.Router();
 
 /*****************************************************/
 // Debugging 
@@ -27,27 +28,15 @@ debugHttpOut('Receive body %s ', inRequest.body);
 
 /*****************************************************/
 // Unique session id 
-var crypto = require('crypto');
 
-var generate_session_id = function() {
+function createSessionId() {
     var sha = crypto.createHash('sha256');
     sha.update(Math.random().toString());
-    return sha.digest('hex');
-}
-
-var full_session_id = generate_session_id();
-var session_id = full_session_id.substring(0, 20);
-
-console.log("\n----------\nSession_id for this user: ", session_id);
-console.log("\n\n"); 
-
-// Javascript implementation of EDN for Clojure
-var edn = require('jsedn');
-
+    return sha.digest('hex').substring(0, 20);
+} 
 
 /*****************************************************/
-// Connection to PostgreSQL / PostGIS 
-const pg = require("pg");
+// Connection to PostgreSQL / PostGIS
 
 var config = {
     user: 'gridfire',
@@ -67,90 +56,105 @@ var hMax = '';
 var maxHeight; 
 var maxWidth;
 
-// async query 
+/*****************************************************/
 
-async function query (q) {
-    /*const client = await pool.connect();
+// STEP 1: Make SQL strings 
+
+function makeCreateViewSQL(tableName, sessionId, lonMin, lonMax, latMin, latMax) {
+    return  "CREATE VIEW clips." + tableName + "_" + sessionId + " AS \n" +
+            "    WITH polygon AS (SELECT ST_Transform(ST_MakeEnvelope(" + lonMin + "," + latMin + "," + lonMax + "," + latMax + ",4326), 900914) AS geom) \n" +
+            "        SELECT ST_Union(ST_Clip(rast, geom)) AS rast \n" +
+            "            FROM landfire." + tableName + "\n" +
+            "            CROSS JOIN polygon \n" + 
+            "            WHERE ST_Intersects(rast, geom);";
+}
+
+function makeSTHeightSQL(tableName, sessionId) {
+    return "SELECT ST_Height(rast) AS height FROM clips." + tableName + "_" + sessionId + ";";
+} 
+
+function makeSTWidthSQL(tableName, sessionId) {
+    return "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + sessionId + ";";
+}
+
+// STEP 2: Make SQL results
+
+async function execSQL(query) {
+
+    console.log("query: ", query);
+    //let res = await pool.query(query);
+    let client = await pool.connect();
     try {
-        let res = await client.query(q);
+        let res = await client.query(query);
+        console.log("\nres: ", res);
+        return res;
+    } catch(e) {
+        console.error(e.stack);
     } finally {
         client.release();
     }
-    //return res;*/
-
-    const client = await pool.connect();
-    let res = await client.query(q);
-    client.release();
-    return res;
 }
 
-async function getQuery () {
+async function testCreateViews(sessionId) {
 
-    const { rows } = await query("SELECT count(*) FROM landfire.ch;");
-    /*console.log("\n\nWithin getQuery()");
-    console.log("JSON.stringify(rows): ", JSON.stringify(rows));
-    console.log("\n\n");*/
+    // Sample values 
+    var lonMin = -122.26791253211559;
+    var lonMax = -122.25455112493366;
+    var latMin = 37.869323470270075;
+    var latMax = 37.874884960441165;
+
+    // Res waits till execSQL promise resolves 
+    let dims = await createViews(sessionId, lonMin, lonMax, latMin, latMax);
+
+    // async execSQL is finished 
+    console.log("\ntestCreateViews dims: ", dims);
+}
+
+// testCreateViews().then(() => {...})
+
+// STEP 3: Get SQL results from step 2
+
+async function createView(tableName, sessionId, lonMin, lonMax, latMin, latMax) {
+    return await execSQL(makeCreateViewSQL(tableName, sessionId, lonMin, lonMax, latMin, latMax));
+}
+
+async function createViews(sessionId, lonMin, lonMax, latMin, latMax) {
+    // FIXME: Need to add dem to tableNames !!  
+
+    await createView('asp', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('cbd', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('cbh', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('cc', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('ch', sessionId, lonMin, lonMax, latMin, latMax);
+    //await createView('dem', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('fbfm40', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('slp', sessionId, lonMin, lonMax, latMin, latMax);
     
+    let dims = await getClipDims('asp', sessionId);
+
+    console.log("\ndims: ", dims);
+    console.log("testAwait height: ", dims.height);
+    console.log("testAwait width: ", dims.width);
+
+    return dims;
 }
 
-async function getGeoPointQuery(geoPoint) {
+async function getClipDims(tableName, sessionId) {
+    
+    let heightResult = await execSQL(makeSTHeightSQL(tableName, sessionId));
+    let widthResult = await execSQL(makeSTWidthSQL(tableName, sessionId));
 
-    // Extract GeoJSON point as text
-    var queryTxt = "SELECT ST_AsText(ST_GeomFromGeoJSON('" + geoPoint + "')) AS wkt;";
-    //const { rows } = await query("SELECT ST_AsText(ST_GeomFromGeoJSON(" + geoPoint + ")) AS wkt;");
-    const { rows } = await query(queryTxt);
+    console.log("\ngetClipDims heightResult: ", heightResult);
+    console.log("getClipDims widthResult: ", widthResult);
 
-    console.log("\nWithin getGeoPointQuery()");
-    console.log("JSON.stringify(rows): ", JSON.stringify(rows));
-    console.log("\n\n");
+    console.log("heightResult[rows][0]: ", heightResult['rows'][0]['height']);
+    console.log("widthResult[rows][0]: ", widthResult['rows'][0]['width']);
+    
+    return {
+        height: heightResult['rows'][0]['height'],
+        width: widthResult['rows'][0]['width']
+    };
 }
-
-//async function getCreateViewQuery(tableName, geoPolygon) {
-async function getCreateViewQuery(tableName, lonMin, lonMax, latMin, latMax) {
-
-    var queryTxt = "CREATE VIEW clips." + tableName + "_" + session_id + " AS \n" +
-                   "    WITH polygon AS (SELECT ST_Transform(ST_MakeEnvelope(" + lonMin + "," + latMin + "," + lonMax + "," + latMax + ",4326), 900914) AS geom) \n" +
-                   "        SELECT ST_Union(ST_Clip(rast, geom)) AS rast \n" +
-                   "            FROM landfire." + tableName + "\n" +
-                   "            CROSS JOIN polygon \n" + 
-                   "            WHERE ST_Intersects(rast, geom);";
-
-    const { rows } = await query(queryTxt);
-
-    if (tableName == 'ch') {
-
-        var wQueryTxt = "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + session_id + ";";
-        //const { wRows } = await query(wQueryTxt);
-        var wRes = await query(wQueryTxt);
-        wMax = wRes['rows'][0]['width'];
-        console.log("\nwMax: ", wMax);
-        console.log("\n");
-
-        var hQueryTxt = "SELECT ST_Height(rast) AS height FROM clips." + tableName + "_" + session_id + ";";
-        var hRes = await query(hQueryTxt);
-        hMax = hRes['rows'][0]['height'];
-        console.log("\nhMax: ", hMax);
-        console.log("\n");
-
-        //return [hMax, wMax];
-    }
-}
-
-/*async function getHeightQuery (tableName) {
-    var hQueryTxt = "SELECT ST_Height(rast) AS height FROM clips." + tableName + "_" + session_id + ";";
-    var hRes = await query(hQueryTxt);
-    var hMax = hRes['rows'][0]['height'];
-    console.log("\nhMax: ", hMax);
-    console.log("\n");
-}
-
-async function getWidthQuery (tableName) {
-    var wQueryTxt = "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + session_id + ";";
-    var wRes = await query(wQueryTxt);
-    var wMax = wRes['rows'][0]['width'];
-    console.log("\nwMax: ", wMax);
-    console.log("\n");
-}*/
 
 /*****************************************************/
 // Check user params for EDN 
@@ -198,6 +202,8 @@ function validateEdnInput (input) {
     return isValidList(form) || isValidVector(form) || isValidScalar(form);
 }
 
+/*****************************************************/
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -210,7 +216,7 @@ router.get('/', function(req, res, next) {
 /* POST event */
 router.post('/', function(req, res) {
 
-    console.log("\n\nIn POST event");
+    var sessionId = createSessionId();
 
     /* Send POST to .edn file for Clojure */
 
@@ -256,19 +262,9 @@ router.post('/', function(req, res) {
             var latMaxParse = JSON.parse(latMax);
             var lonMinParse = JSON.parse(lonMin);
             var lonMaxParse = JSON.parse(lonMax);
-            
-            // Need to call ST_Width + ST_Height on just 1 raster
-            var chTable = 'ch';
-            getCreateViewQuery(chTable, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
-            
-            var tableNames = ['asp', 'cbd', 'cbh', 'cc', 'fbfm40', 'slp'];
 
-            tableNames.forEach(
-                function (tableName) {
-                    getCreateViewQuery(tableName, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
-                }
-            );
-
+            createViews(sessionId, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+            
             if (hMax == '') {
                 ignitionLat = latMin + ',' + latMax;
                 ignitionLon = lonMin + ',' + lonMax;
