@@ -121,7 +121,7 @@ async function createViews(sessionId, lonMin, lonMax, latMin, latMax) {
     await createView('cbh', sessionId, lonMin, lonMax, latMin, latMax);
     await createView('cc', sessionId, lonMin, lonMax, latMin, latMax);
     await createView('ch', sessionId, lonMin, lonMax, latMin, latMax);
-    //await createView('dem', sessionId, lonMin, lonMax, latMin, latMax);
+    await createView('dem', sessionId, lonMin, lonMax, latMin, latMax);
     await createView('fbfm40', sessionId, lonMin, lonMax, latMin, latMax);
     await createView('slp', sessionId, lonMin, lonMax, latMin, latMax);
     
@@ -281,14 +281,14 @@ router.post('/', async function(req, res) {
                                 edn.kw(":subname"), "//localhost:5432/gridfire",
                                 edn.kw(":user"), "gridfire"]),
                             edn.kw(":landfire-layers"),
-                            new edn.Map([edn.kw(":elevation"), "clip.dem_" + sessionId,
-                                edn.kw(":slope"), "clip.slp_" + sessionId,
-                                edn.kw(":aspect"), "clip.asp_" + sessionId,
-                                edn.kw(":fuel-model"), "clip.fbfm40_" + sessionId,
-                                edn.kw(":canopy-height"), "clip.ch_" + sessionId,
-                                edn.kw(":canopy-base-height"), "clip.cbh_" + sessionId,
-                                edn.kw(":crown-bulk-density"), "clip.cbd_" + sessionId,
-                                edn.kw(":canopy-cover"), "clip.cc_" + sessionId]),
+                            new edn.Map([edn.kw(":elevation"), "clips.dem_" + sessionId,
+                                edn.kw(":slope"), "clips.slp_" + sessionId,
+                                edn.kw(":aspect"), "clips.asp_" + sessionId,
+                                edn.kw(":fuel-model"), "clips.fbfm40_" + sessionId,
+                                edn.kw(":canopy-height"), "clips.ch_" + sessionId,
+                                edn.kw(":canopy-base-height"), "clips.cbh_" + sessionId,
+                                edn.kw(":crown-bulk-density"), "clips.cbd_" + sessionId,
+                                edn.kw(":canopy-cover"), "clips.cc_" + sessionId]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
                                     edn.kw(":ignition-row"), checkVals(ignitionRow), 
@@ -366,8 +366,8 @@ router.post('/', async function(req, res) {
         }
 
         //var gridFireBoot = "cd ../../gridfire/ && boot build";
-        //var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar model_params_" + sessionId + ".edn";
-        var gridFireRun = "java -jar resources/gridfire.jar model_params_" + sessionId + ".edn";
+        var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar model_params_" + sessionId + ".edn";
+        //var gridFireRun = "java -jar resources/gridfire.jar model_params_" + sessionId + ".edn";
 
         execShell("ls");               // test shell cmd 
         //execShell(gridFireBoot);
