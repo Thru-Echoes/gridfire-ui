@@ -86,7 +86,7 @@ async function execSQL(query) {
     let client = await pool.connect();
     try {
         let res = await client.query(query);
-        console.log("\nres: ", res);
+        //console.log("\nres: ", res);
         return res;
     } catch(e) {
         console.error(e.stack);
@@ -110,8 +110,6 @@ async function testCreateViews(sessionId) {
     console.log("\ntestCreateViews dims: ", dims);
 }
 
-// testCreateViews().then(() => {...})
-
 // STEP 3: Get SQL results from step 2
 
 async function createView(tableName, sessionId, lonMin, lonMax, latMin, latMax) {
@@ -132,7 +130,7 @@ async function createViews(sessionId, lonMin, lonMax, latMin, latMax) {
     
     let dims = await getClipDims('asp', sessionId);
 
-    console.log("\ndims: ", dims);
+    //console.log("\ndims: ", dims);
     console.log("testAwait height: ", dims.height);
     console.log("testAwait width: ", dims.width);
 
@@ -144,8 +142,8 @@ async function getClipDims(tableName, sessionId) {
     let heightResult = await execSQL(makeSTHeightSQL(tableName, sessionId));
     let widthResult = await execSQL(makeSTWidthSQL(tableName, sessionId));
 
-    console.log("\ngetClipDims heightResult: ", heightResult);
-    console.log("getClipDims widthResult: ", widthResult);
+    //console.log("\ngetClipDims heightResult: ", heightResult);
+    //console.log("getClipDims widthResult: ", widthResult);
 
     console.log("heightResult[rows][0]: ", heightResult['rows'][0]['height']);
     console.log("widthResult[rows][0]: ", widthResult['rows'][0]['width']);
@@ -206,15 +204,11 @@ function validateEdnInput (input) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
-    // Simple Postgres query 
-    getQuery();
-
     res.render('index', { title: 'GridFire Interface', error: null });
 });
 
 /* POST event */
-router.post('/', function(req, res) {
+router.post('/', async function(req, res) {
 
     var sessionId = createSessionId();
 
@@ -263,7 +257,7 @@ router.post('/', function(req, res) {
             var lonMinParse = JSON.parse(lonMin);
             var lonMaxParse = JSON.parse(lonMax);
 
-            var dims = createViews(sessionId, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
+            var dims = await createViews(sessionId, lonMinParse, lonMaxParse, latMinParse, latMaxParse);
             
             ignitionRow = '[0 ' + dims.height + ']';
             ignitionCol = '[0 ' + dims.width + ']';
@@ -290,14 +284,14 @@ router.post('/', function(req, res) {
                                 edn.kw(":subname"), "//localhost:5432/gridfire",
                                 edn.kw(":user"), "gridfire"]),
                             edn.kw(":landfire-layers"),
-                            new edn.Map([edn.kw(":elevation"), "clip.dem_" + session_id,
-                                edn.kw(":slope"), "clip.slp_" + session_id,
-                                edn.kw(":aspect"), "clip.asp_" + session_id,
-                                edn.kw(":fuel-model"), "clip.fbfm40_" + session_id,
-                                edn.kw(":canopy-height"), "clip.ch_" + session_id,
-                                edn.kw(":canopy-base-height"), "clip.cbh_" + session_id,
-                                edn.kw(":crown-bulk-density"), "clip.cbd_" + session_id,
-                                edn.kw(":canopy-cover"), "clip.cc_" + session_id]),
+                            new edn.Map([edn.kw(":elevation"), "clip.dem_" + sessionId,
+                                edn.kw(":slope"), "clip.slp_" + sessionId,
+                                edn.kw(":aspect"), "clip.asp_" + sessionId,
+                                edn.kw(":fuel-model"), "clip.fbfm40_" + sessionId,
+                                edn.kw(":canopy-height"), "clip.ch_" + sessionId,
+                                edn.kw(":canopy-base-height"), "clip.cbh_" + sessionId,
+                                edn.kw(":crown-bulk-density"), "clip.cbd_" + sessionId,
+                                edn.kw(":canopy-cover"), "clip.cc_" + sessionId]),
                                     edn.kw(":srid"), "CUSTOM:900914",
                                     edn.kw(":cell-size"), 98.425,
                                     edn.kw(":ignition-row"), checkVals(ignitionRow), 
@@ -312,7 +306,7 @@ router.post('/', function(req, res) {
                                     edn.kw(":simulations"), checkVals(simulations),
                                     edn.kw(":random-seed"), checkVals(randomSeed),
                                     //edn.kw(":outfile-suffix"), "_tile_100",
-                                    edn.kw(":outfile-suffix"), "_" + session_id,
+                                    edn.kw(":outfile-suffix"), "_" + sessionId,
                                     edn.kw(":output-landfire-inputs?"), true,
                                     edn.kw(":output-geotiffs?"), true,
                                     edn.kw(":output-pngs?"), true,
