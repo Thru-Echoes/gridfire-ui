@@ -54,11 +54,6 @@ $( document ).ready(function() {
 
     /**********************************************************
 
-    // TODO: SQL clips 8 LANDFIRE layers from box drawn on map 
-    //          stores clips as VIEWS (see example SQL)
-
-
-
     // TODO: Use LayerSwitcher widget, enable on map 
 
     *********************************************************/

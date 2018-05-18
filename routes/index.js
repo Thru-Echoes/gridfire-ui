@@ -3,8 +3,11 @@ const fs = require('fs');
 const pg = require("pg");
 const crypto = require('crypto');
 const edn = require('jsedn');
+const util = require('util');
 
 const router = express.Router();
+const spawn = require('child_process').spawn;
+const exec = require('child_process').exec;
 
 /*****************************************************/
 // Debugging 
@@ -49,12 +52,6 @@ var config = {
 };
 
 const pool = new pg.Pool(config);
-
-// Max height and max width for ignition-row and ignition-col
-var wMax = '';
-var hMax = '';
-var maxHeight; 
-var maxWidth;
 
 /*****************************************************/
 
@@ -319,6 +316,61 @@ router.post('/', async function(req, res) {
             if (err) console.log(err);
             console.log('\nWrote params to file sample_params.edn.\n');
         });
+
+        /*****************************************************/
+        // Run GridFire
+        
+        // With util spawn (stream output back to client)
+
+        function spawnShell (shellCmd) {
+            var spawnInst = spawn(shellCmd);
+            spawnInst.stdout.on("data", function (data) {
+                console.log("stdout: " + data);
+            });
+    
+            spawnInst.stderr.on("data", function (data) {
+                console.log("stderr: " + data);
+            });
+    
+            spawnInst.on("exit", function (code) {
+                console.log("Child process exited with code " + code);
+            });
+        }
+
+        /*var spawnList = spawn("ls -la");
+        spawnList.stdout.on("data", function (data) {
+            console.log("spawnList stdout: " + data);
+        });
+        spawnList.stderr.on("data", function (data) {
+            console.log("spawnList stderr: " + data);
+        });
+        spawnList.on("exit", function (code) {
+            console.log("spawnList child process exited with code " + code);
+        });*/
+
+        // With util exec (buffers output)
+
+        function execShell(shellCmd) {
+            var shellExec = exec(shellCmd, function(err, stdout, stderr) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log("\nStdout of " + shellCmd);
+                console.log(stdout);
+            })
+
+            shellExec.on("exit", function (exitCode) {
+                console.log("exitCode: " + exitCode);
+            });
+        }
+
+        var shellList = "ls";
+        var gridFireBoot = "cd ../../gridfire/ && boot build";
+        var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar sample_params.edn";
+
+        execShell(shellList);               // test shell cmd 
+        execShell(gridFireBoot);
+        execShell(gridFireRun);
 
         //res.render('index', { title: 'GridFire Interface', error: null });
         res.redirect('/');
