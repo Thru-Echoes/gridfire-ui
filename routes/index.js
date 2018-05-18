@@ -311,10 +311,11 @@ router.post('/', async function(req, res) {
 
         // Encode EDN Map
         var ednObj = edn.encode(ednMap);
+        var fileName = "model_params_" + sessionId + ".edn";
 
-        fs.writeFile('sample_params.edn', ednObj, function(err, ednObj) {
+        fs.writeFile(fileName, ednObj, function(err, ednObj) {
             if (err) console.log(err);
-            console.log('\nWrote params to file sample_params.edn.\n');
+            console.log("\nWrote params to file " + fileName);
         });
 
         /*****************************************************/
@@ -364,12 +365,12 @@ router.post('/', async function(req, res) {
             });
         }
 
-        var shellList = "ls";
-        var gridFireBoot = "cd ../../gridfire/ && boot build";
-        var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar sample_params.edn";
+        //var gridFireBoot = "cd ../../gridfire/ && boot build";
+        //var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar model_params_" + sessionId + ".edn";
+        var gridFireRun = "java -jar resources/gridfire.jar model_params_" + sessionId + ".edn";
 
-        execShell(shellList);               // test shell cmd 
-        execShell(gridFireBoot);
+        execShell("ls");               // test shell cmd 
+        //execShell(gridFireBoot);
         execShell(gridFireRun);
 
         //res.render('index', { title: 'GridFire Interface', error: null });

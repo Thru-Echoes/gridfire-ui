@@ -6,6 +6,7 @@
 
 # .edn file created on POST event 
 sample_params.edn
+model_params_*.edn
 
 # .sql example file for dev purposes 
 public/example.sql
