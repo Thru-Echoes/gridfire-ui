@@ -157,7 +157,7 @@ table.borderless td,table.borderless th {
 }
 
 #summaryStatsContainer {
-    width: 500px;
+    width: 100%;
     overflow-x: scroll;
     white-space: nowrap;
 }

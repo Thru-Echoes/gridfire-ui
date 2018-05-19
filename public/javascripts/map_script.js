@@ -86,6 +86,7 @@ if (validSims) {
         datatables_options: {"paging": false}
     });
 
+    document.getElementById('summaryStatsInfo').style.display = "block";
     document.getElementById('summaryStatsContainer').style.display = "block";
 }
 

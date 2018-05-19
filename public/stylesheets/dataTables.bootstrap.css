@@ -87,7 +87,8 @@ table.dataTable thead .sorting_desc:after {
 	position: absolute;
 	top: 8px;
 	right: 8px;
-	display: block;
+    /*display: block;*/
+    display: none;
 	font-family: 'Glyphicons Halflings';
 	opacity: 0.5;
 }
