@@ -14,8 +14,22 @@ CsvToHtmlTable = {
       $("#" + el).html("<table class='table table-striped table-condensed' id='" + el + "-table'></table>");
 
       $.when($.get(csv_path)).then(
-        function(data){      
+        function(data){
+            
+          // FIXME: Need to add col 0th place with name "Visibility" with value FALSE  
+
           var csv_data = $.csv.toArrays(data, csv_options);
+
+          // Olives (19 May 2018): Add visible col 
+          csv_data[0].unshift("Visibile");
+          
+          csv_data.forEach( 
+              function (ddata) { 
+                  if (ddata[0] !== "Visibile") {
+                    ddata.unshift(true);
+                  } 
+              }
+          );
           
           var table_head = "<thead><tr>";
 
@@ -33,9 +47,13 @@ CsvToHtmlTable = {
             //takes in an array of column index and function pairs
             if (custom_formatting != []) {
               $.each(custom_formatting, function(i, v){
+
+                // FIXME: how to send row idx to client table 
+                //debugger; 
+
                 var col_idx = v[0]
                 var func = v[1];
-                csv_data[row_id][col_idx]= func(csv_data[row_id][col_idx]);
+                csv_data[row_id][col_idx]= func(csv_data[row_id][col_idx], row_id);
               })
             }
 

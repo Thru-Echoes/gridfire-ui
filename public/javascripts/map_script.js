@@ -52,10 +52,42 @@ var onMapClick = function (e) {
 };
 mapConfig.map.on('click', onMapClick);
 
+// LayerSwitcher 
+
+//var layerSwitcher = new ol.control.LayerSwitcher();
+//mapConfig.map.addControl(layerSwitcher);
+
 proj4.defs('CUSTOM:900914', '+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs');
 var proj900914 = ol.proj.get('CUSTOM:900914');
 
+// Helper fn for CSV to HTML table 
+function setLayerVisibility(colValue, rowIdx) {
+
+    if (colValue) {
+        return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' checked>  " + colValue + "</input>";
+    } else {
+        return "NA";
+    }
+}
+
+function changeLayerVisibility(rowIdx) {
+    // Add layer switcher    
+    let thisCheckbox = document.getElementById('checkbox_' + rowIdx); 
+
+    if (mercator.getLayerByTitle(mapConfig, 'FlameLength_' + rowIdx)) {
+        if (thisCheckbox.checked) {
+            mercator.getLayerByTitle(mapConfig, 'FlameLength_' + rowIdx).setVisible(true);
+        } else {
+            mercator.getLayerByTitle(mapConfig, 'FlameLength_' + rowIdx).setVisible(false); 
+        }
+    }
+}
+
 if (validSims) {
+
+    document.getElementById("gridFireRunning").style.display = "none";
+    document.getElementById("gridFireDone").style.display = "block";
+
     validSims.forEach(
         function (sim) {
 
@@ -76,18 +108,33 @@ if (validSims) {
         }
     );
 
-    // Adding CSV to HTML table 
+    // Add user bounding box to map
+    /*mercator.addVectorLayer(mapConfig, 'StudyArea_' + sessionId, 
+        mercator.geometryToVectorSource(
+            mercator.parseGeoJson('geojson_bounding_box', true)
+        ), ceoMapStyles.polygon);*/
+
+    // Add CSV to HTML table 
     CsvToHtmlTable.init({
         csv_path: 'model/summary_stats_' + sessionId + '.csv',
         //element: 'table-container',
         element: 'summaryStatsContainer',
         allow_download: true,
         csv_options: {separator: ',', delimiter: '"'},
-        datatables_options: {"paging": false}
+        datatables_options: {"paging": false},
+        custom_formatting: [[0, setLayerVisibility]]     // Apply fn to 0th col of every row 
     });
 
     document.getElementById('summaryStatsInfo').style.display = "block";
     document.getElementById('summaryStatsContainer').style.display = "block";
+    document.getElementById('formFieldsContent').style.height = "35%";
+} else {
+    document.getElementById('summaryStatsInfo').style.display = "none";
+    document.getElementById('summaryStatsContainer').style.display = "none"; 
+    document.getElementById('formFieldsContent').style.height = "50%";
+
+    document.getElementById("gridFireRunning").style.display = "none";
+    document.getElementById("gridFireDone").style.display = "none";
 }
 
 /* 

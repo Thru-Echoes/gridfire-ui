@@ -8,7 +8,15 @@ html
         include map.pug
         //div.container
             div.row#btmMap
-        div.container(style="text-align: center; padding-top: 120px; padding-bottom: 100px;")
+        div.container(style="text-align: center; padding-top: 20px; padding-bottom: 100px;")
+            <div id="gridFireRunning" class="alert alert-warning" role="alert" style="display: none;">
+                <strong>Running:</strong> GridFire is processing
+            </div>
+            <div id="gridFireDone" class="alert alert-success" role="alert" style="display: none;">
+                <strong>Complete:</strong> GridFire results below
+            </div>
+            br
+            br
             h3 GridFire raster-based fire spread model
             br
             p Model results will display on the map and summary statistics in a table here after the simulation is complete.
@@ -18,8 +26,7 @@ html
                 p.small Select columns to sort values <i>Table scrolls horizontally</i>
                 br 
             div(id="summaryStatsContainer", style="display: none;")
-                br
-                
+                br  
         //div.container
             div.row#preFoot
         include foot.pug

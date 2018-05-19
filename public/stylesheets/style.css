@@ -81,7 +81,7 @@ table.borderless td,table.borderless th {
     /*margin: 1px;*/
     will-change: contents,width;
     overflow-y: scroll;
-    height: 60%;
+    height: 50%;
     width: 32%;
 }
 

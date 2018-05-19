@@ -54,6 +54,23 @@ var config = {
 const pool = new pg.Pool(config);
 
 /*****************************************************/
+// Show GridFire running status 
+
+// Change HTML alert status based on GridFire
+function gridFireRunning() {
+    document.getElementById("gridFireDone").style.display = "none";
+    document.getElementById("gridFireRunning").style.display = "block";
+} 
+
+// Show GridFire done status
+
+function gridFireDone() {
+    document.getElementById("gridFireRunning").style.display = "none";
+    document.getElementById("gridFireDone").style.display = "block";
+}
+
+
+/*****************************************************/
 
 // STEP 1: Make SQL strings 
 
@@ -83,7 +100,7 @@ function makeSTMetaDataSQL(tableName, sessionId) {
 
 async function execSQL(query) {
 
-    //console.log("query: ", query);
+    console.log("\nquery: " + query + "\n");
     //let res = await pool.query(query);
     let client = await pool.connect();
     try {
@@ -107,9 +124,6 @@ async function testCreateViews(sessionId) {
 
     // Res waits till execSQL promise resolves 
     let dims = await createViews(sessionId, lonMin, lonMax, latMin, latMax);
-
-    // async execSQL is finished 
-    console.log("\ntestCreateViews dims: ", dims);
 }
 
 // STEP 3: Get SQL results from step 2
@@ -132,10 +146,6 @@ async function createViews(sessionId, lonMin, lonMax, latMin, latMax) {
     
     let dims = await getClipDims('asp', sessionId);
 
-    //console.log("\ndims: ", dims);
-    console.log("testAwait height: ", dims.height);
-    console.log("testAwait width: ", dims.width);
-
     return dims;
 }
 
@@ -143,12 +153,6 @@ async function getClipDims(tableName, sessionId) {
     
     let heightResult = await execSQL(makeSTHeightSQL(tableName, sessionId));
     let widthResult = await execSQL(makeSTWidthSQL(tableName, sessionId));
-
-    //console.log("\ngetClipDims heightResult: ", heightResult);
-    //console.log("getClipDims widthResult: ", widthResult);
-
-    console.log("heightResult[rows][0]: ", heightResult['rows'][0]['height']);
-    console.log("widthResult[rows][0]: ", widthResult['rows'][0]['width']);
     
     return {
         height: heightResult['rows'][0]['height'],
@@ -158,8 +162,6 @@ async function getClipDims(tableName, sessionId) {
 
 async function getClipMetaData(tableName, sessionId) {
     let metaData = await execSQL(makeSTMetaDataSQL(tableName, sessionId));
-
-    console.log("metaData: ", metaData);
 
     return {
         upperLeftX: metaData['rows'][0]['upperleftx'],
@@ -279,9 +281,8 @@ router.post('/', async function(req, res) {
             ignitionRow = '[0 ' + dims.height + ']';
             ignitionCol = '[0 ' + dims.width + ']';
 
-            console.log("\nignitionRow: ", ignitionRow);
-            console.log("ignitionCol: ", ignitionCol);
-            console.log("\n");
+            console.log("\nignitionRow: " + ignitionRow);
+            console.log("ignitionCol: " + ignitionCol + "\n");
         }
 
         var maxRuntime = req.body['max-runtime'];
@@ -428,7 +429,12 @@ router.post('/', async function(req, res) {
                 );
 
             console.log("\nvalidSims: " + validSims);
-            res.render('index', { title: 'GridFire Interface', error: null, sessionId: JSON.stringify(sessionId), validSims: JSON.stringify(validSims), extent: JSON.stringify(extent) });
+
+            // FIXME: send params as obj postParams to res.render to show in form field client side
+
+            res.render('index', { title: 'GridFire Interface', error: null, 
+                sessionId: JSON.stringify(sessionId), validSims: JSON.stringify(validSims), 
+                extent: JSON.stringify(extent) });
         }
     } catch(err) {
 
