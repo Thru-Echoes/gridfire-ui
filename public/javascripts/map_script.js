@@ -131,7 +131,7 @@ if (validSims) {
 } else {
     document.getElementById('summaryStatsInfo').style.display = "none";
     document.getElementById('summaryStatsContainer').style.display = "none"; 
-    document.getElementById('formFieldsContent').style.height = "50%";
+    document.getElementById('formFieldsContent').style.height = "45%";
 
     document.getElementById("gridFireRunning").style.display = "none";
     document.getElementById("gridFireDone").style.display = "none";

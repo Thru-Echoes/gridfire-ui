@@ -44,11 +44,11 @@ a {
 
 /* Map */ 
 
-/*#map {
-    height: 600px;
+#map {
+    height: 620px;
     width: 100%;
-    padding: 30px;
-}*/
+    /*padding: 30px;*/
+}
 
 .ol-attribution.ol-logo-only {
     bottom: 1.4em;
@@ -81,7 +81,7 @@ table.borderless td,table.borderless th {
     /*margin: 1px;*/
     will-change: contents,width;
     overflow-y: scroll;
-    height: 50%;
+    height: 45%;
     width: 32%;
 }
 
