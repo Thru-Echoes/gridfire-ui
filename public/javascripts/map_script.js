@@ -75,6 +75,18 @@ if (validSims) {
             }));
         }
     );
+
+    // Adding CSV to HTML table 
+    CsvToHtmlTable.init({
+        csv_path: 'model/summary_stats_' + sessionId + '.csv',
+        //element: 'table-container',
+        element: 'summaryStatsContainer',
+        allow_download: true,
+        csv_options: {separator: ',', delimiter: '"'},
+        datatables_options: {"paging": false}
+    });
+
+    document.getElementById('summaryStatsContainer').style.display = "block";
 }
 
 /* 

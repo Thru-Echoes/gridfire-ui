@@ -8,8 +8,12 @@ html
         include map.pug
         //div.container
             div.row#btmMap
-        //div.container(style="text-align: center; padding-top: 180px;")
+        div.container(style="text-align: center; padding-top: 120px; padding-bottom: 100px;")
             h3 GridFire raster-based fire spread model
+            br
+            p Model results will display on the map and summary statistics in a table here after the simulation is complete.
+            br
+            div(id="summaryStatsContainer", style="display: none;")
         //div.container
             div.row#preFoot
         include foot.pug

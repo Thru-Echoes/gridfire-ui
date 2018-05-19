@@ -150,6 +150,22 @@ table.borderless td,table.borderless th {
     right: 0;
 }
 
+/* CSV to HTML table */
+
+.table td {
+    font-size: 11px;
+}
+
+#summaryStatsContainer {
+    width: 500px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+#summaryStatsContainer-table_filter {
+    display: none;
+}
+
 /* Footer */
 
 #preFoot {

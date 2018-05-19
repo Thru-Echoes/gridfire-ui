@@ -1,11 +1,11 @@
 head
     title= title
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
-    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/css/bootstrap-slider.css')
     //link(rel='stylesheet', href='/stylesheets/openlayers-3.13.0.css')
     //link(rel='stylesheet', href='/stylesheets/ol3-layerswitcher.css')
-    //link(rel='stylesheet', href='/stylesheets/ol-layerswitcher.css')
+    link(rel='stylesheet', href='/stylesheets/ol-layerswitcher.css')
     //link(rel='stylesheet', href='/stylesheets/layerswitcher.css')
+    link(rel='stylesheet', href='/stylesheets/dataTables.bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol-debug.css')
     //link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css')
@@ -23,6 +23,10 @@ head
     //script(type='text/javascript', src='/javascripts/ol-layerswitcher.js')
     //script(type='text/javascript', src='/javascripts/layerswitcher.js')
     //script(type='text/javascript', src='/javascripts/map_script.js')
+    script(type='text/javascript', src='/javascripts/jquery.csv.min.js')
+    script(type='text/javascript', src='/javascripts/jquery.dataTables.min.js')
+    script(type='text/javascript', src='/javascripts/dataTables.bootstrap.js')
+    script(type='text/javascript', src='/javascripts/csv_to_html_table.js')
     script(type='text/javascript', src='/javascripts/form_script.js')
 header#header
     nav.navbar.navbar-static-top.navbar-dark.bg-dark
