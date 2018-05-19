@@ -21,11 +21,11 @@ CsvToHtmlTable = {
           var csv_data = $.csv.toArrays(data, csv_options);
 
           // Olives (19 May 2018): Add visible col 
-          csv_data[0].unshift("Visibile");
+          csv_data[0].unshift("visible");
           
           csv_data.forEach( 
               function (ddata) { 
-                  if (ddata[0] !== "Visibile") {
+                  if (ddata[0] !== "visible") {
                     ddata.unshift(true);
                   } 
               }

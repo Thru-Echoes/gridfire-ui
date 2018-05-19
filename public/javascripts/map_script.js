@@ -18,8 +18,16 @@ var layerConfigs = [
         }
 }];
 
+// SF Bay Area 
+var bayArea = [-120.8958, 38.8375];
+//var elDorado = [-120.3055, 38.7949];
+var elDorado = [-120.48163577914237, 38.74627769461665];
+
+// El Dorado National Forest 
+
 // Initialize OpenLayers map
-var mapConfig = mercator.createMap('map', [-120.8958, 38.8375], 6, layerConfigs);
+//var mapConfig = mercator.createMap('map', [-120.8958, 38.8375], 6, layerConfigs);
+var mapConfig = mercator.createMap('map', elDorado, 10, layerConfigs);
 
 // View OpenLayers map 
 var layerDigitalGlobe = 'DigitalGlobeRecentImagery';
@@ -64,7 +72,11 @@ var proj900914 = ol.proj.get('CUSTOM:900914');
 function setLayerVisibility(colValue, rowIdx) {
 
     if (colValue) {
-        return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' checked>  " + colValue + "</input>";
+        if (validSims.includes(rowIdx)) {
+            return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' checked></input>";
+        } else {
+            return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' disabled></input>";
+        }
     } else {
         return "NA";
     }
