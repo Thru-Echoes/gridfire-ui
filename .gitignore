@@ -14,6 +14,9 @@ public/example.sql
 # .tif LANDFIRE data
 geotiff_data/
 
+# GridFire model files 
+public/model/*
+
 # Ignore native extensions and npm rebuild changes in node_modules/
 node_modules/**/*.node
 node_modules/**/*.o

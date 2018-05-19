@@ -1,6 +1,8 @@
 doctype html
 html
     include head.pug
+    //body(onload="mapScript()")
+    //body(onload="console.log('TEST TEST');")
     body
         block content
         include map.pug
@@ -12,3 +14,9 @@ html
             div.row#preFoot
         include foot.pug
         //include ../public/javascripts/form_script.js
+        script.
+            var sessionId = !{sessionId};
+            var validSims = !{validSims};
+            var extent = !{extent}; 
+        script(src="/javascripts/map_script.js")
+

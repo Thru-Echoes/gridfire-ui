@@ -74,6 +74,11 @@ function makeSTWidthSQL(tableName, sessionId) {
     return "SELECT ST_Width(rast) AS width FROM clips." + tableName + "_" + sessionId + ";";
 }
 
+// See GridFire results on map 
+function makeSTMetaDataSQL(tableName, sessionId) {
+    return "SELECT (ST_Metadata(rast)).* FROM clips." + tableName + "_" + sessionId + ";";
+}
+
 // STEP 2: Make SQL results
 
 async function execSQL(query) {
@@ -151,6 +156,21 @@ async function getClipDims(tableName, sessionId) {
     };
 }
 
+async function getClipMetaData(tableName, sessionId) {
+    let metaData = await execSQL(makeSTMetaDataSQL(tableName, sessionId));
+
+    console.log("metaData: ", metaData);
+
+    return {
+        upperLeftX: metaData['rows'][0]['upperleftx'],
+        upperLeftY: metaData['rows'][0]['upperlefty'],
+        width: metaData['rows'][0]['width'],
+        height: metaData['rows'][0]['height'],
+        scaleX: metaData['rows'][0]['scalex'],
+        scaleY: metaData['rows'][0]['scaley']
+    };
+}
+
 /*****************************************************/
 // Check user params for EDN 
 var checkVals = function (val) {
@@ -201,7 +221,7 @@ function validateEdnInput (input) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'GridFire Interface', error: null });
+    res.render('index', { title: 'GridFire Interface', error: null, sessionId: "null", validSims: "null", extent: "null" });
 });
 
 /* POST event */
@@ -311,7 +331,7 @@ router.post('/', async function(req, res) {
 
         // Encode EDN Map
         var ednObj = edn.encode(ednMap);
-        var fileName = "model_params_" + sessionId + ".edn";
+        var fileName = "public/model/model_params_" + sessionId + ".edn";
 
         fs.writeFile(fileName, ednObj, function(err, ednObj) {
             if (err) console.log(err);
@@ -321,34 +341,6 @@ router.post('/', async function(req, res) {
         /*****************************************************/
         // Run GridFire
         
-        // With util spawn (stream output back to client)
-
-        function spawnShell (shellCmd) {
-            var spawnInst = spawn(shellCmd);
-            spawnInst.stdout.on("data", function (data) {
-                console.log("stdout: " + data);
-            });
-    
-            spawnInst.stderr.on("data", function (data) {
-                console.log("stderr: " + data);
-            });
-    
-            spawnInst.on("exit", function (code) {
-                console.log("Child process exited with code " + code);
-            });
-        }
-
-        /*var spawnList = spawn("ls -la");
-        spawnList.stdout.on("data", function (data) {
-            console.log("spawnList stdout: " + data);
-        });
-        spawnList.stderr.on("data", function (data) {
-            console.log("spawnList stderr: " + data);
-        });
-        spawnList.on("exit", function (code) {
-            console.log("spawnList child process exited with code " + code);
-        });*/
-
         // With util exec (buffers output)
 
         function execShell(shellCmd) {
@@ -362,27 +354,85 @@ router.post('/', async function(req, res) {
 
             shellExec.on("exit", function (exitCode) {
                 console.log("exitCode: " + exitCode);
+                showMapResults(sessionId);
             });
         }
 
         //var gridFireBoot = "cd ../../gridfire/ && boot build";
-        var gridFireRun = "java -jar ../../gridfire/target/gridfire-1.5.0.jar model_params_" + sessionId + ".edn";
-        //var gridFireRun = "java -jar resources/gridfire.jar model_params_" + sessionId + ".edn";
+        var gridFireRun = "cd public/model && java -jar gridfire.jar model_params_" + sessionId + ".edn";
 
-        execShell("ls");               // test shell cmd 
-        //execShell(gridFireBoot);
         execShell(gridFireRun);
 
-        //res.render('index', { title: 'GridFire Interface', error: null });
-        res.redirect('/');
+        async function showMapResults(sessionId) {
 
+            // PostgreSQL (in async fn)
+            // SELECT (ST_Metadata(rast)).* FROM clips.asp_684422af4af02910806d;
+            // SELECT (ST_Metadata(rast)).* FROM clips.asp_<sessionId>;
+
+            let metaData = await getClipMetaData("asp", sessionId);
+
+            console.log("\nshowMapResults metaData: " + metaData);
+
+            // Get extent [left, bottom, right, top] 
+            /*var upperLeftX = -2254890;      
+            var upperLeftY = 1955790;
+            var flameWidth = 152;       // pixel - width (from psql) 
+            var flameHeight = 129;      // pixel steps - height (from psql)
+            var scaleX = 30;            // meters (from psql)
+            var scaleY = -30;           // meters (from psql)
+
+            var flameBottom = upperLeftY + scaleY * flameHeight;
+            var flameRight = upperLeftX + scaleX * flameWidth;*/
+
+            var bottom = metaData.upperLeftY + metaData.scaleY * metaData.height;
+            var right = metaData.upperLeftX + metaData.scaleX * metaData.width;
+
+            var extent = [metaData.upperLeftX, bottom, right, metaData.upperLeftY];
+
+            console.log("\nshowMapResults extent: ", extent);
+            
+            var makeRange = function (min, max) {
+                return Array.apply(null, {length: max + 1}).map(Number.call, Number).slice(min);
+            };
+
+            var validSims = makeRange(1, simulations)
+                .map(
+                    function (sim) {
+                        if (fs.existsSync('public/model/flame_length_' + sessionId + '_' + sim + '.tif')) {
+                            // gdal_translate .tif to .png
+                            let shellCmd = 'cd public/model/ && gdal_translate -of PNG flame_length_' + sessionId + '_' + sim + '.tif flame_length_' + sessionId + '_' + sim + '.png';
+                            let shellExec = exec(shellCmd, function(err, stdout, stderr) {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                console.log("\nStdout of " + shellCmd);
+                                console.log(stdout);
+                            });
+                
+                            shellExec.on("exit", function (exitCode) {
+                                console.log("exitCode: " + exitCode);
+                            });
+                            return sim;
+                        } else {
+                            return null;
+                        }
+                    }
+                ).filter(
+                    function (sim) {
+                        return sim !== null;
+                    }
+                );
+
+            console.log("\nvalidSims: " + validSims);
+            res.render('index', { title: 'GridFire Interface', error: null, sessionId: JSON.stringify(sessionId), validSims: JSON.stringify(validSims), extent: JSON.stringify(extent) });
+        }
     } catch(err) {
 
         console.log("\n\nCatch(err) POST event");
         console.log("err: ", err);
         console.log("\n\n");
 
-        res.render('index', { title: 'GridFire Interface', error: err });
+        res.render('index', { title: 'GridFire Interface', error: err, sessionId: "null", validSims: "null", extent: "null" });
         //res.redirect('/');
     }
 })
