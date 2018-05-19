@@ -83,7 +83,7 @@ function makeSTMetaDataSQL(tableName, sessionId) {
 
 async function execSQL(query) {
 
-    console.log("query: ", query);
+    //console.log("query: ", query);
     //let res = await pool.query(query);
     let client = await pool.connect();
     try {
@@ -371,7 +371,7 @@ router.post('/', async function(req, res) {
 
             let metaData = await getClipMetaData("asp", sessionId);
 
-            console.log("\nshowMapResults metaData: " + metaData);
+            //console.log("\nshowMapResults metaData: " + metaData);
 
             // Get extent [left, bottom, right, top] 
             /*var upperLeftX = -2254890;      
@@ -399,8 +399,12 @@ router.post('/', async function(req, res) {
                 .map(
                     function (sim) {
                         if (fs.existsSync('public/model/flame_length_' + sessionId + '_' + sim + '.tif')) {
+                            // gdaldem color .tif to .tif 
+                            // 'gdaldem color-relief flame_length_<sessionId>_<sim>.tif color.txt flame_length_<sessionId>_<sim>.tif -alpha'
+                            
                             // gdal_translate .tif to .png
-                            let shellCmd = 'cd public/model/ && gdal_translate -of PNG flame_length_' + sessionId + '_' + sim + '.tif flame_length_' + sessionId + '_' + sim + '.png';
+                            let shellCmd = 'cd public/model/ && gdaldem color-relief -of PNG flame_length_' + sessionId + '_' + sim + '.tif ../../resources/color.txt flame_length_' + sessionId + '_' + sim + '.png -alpha';
+                            //let shellCmd = 'cd public/model/ && gdal_translate -of PNG flame_length_' + sessionId + '_' + sim + '.tif flame_length_' + sessionId + '_' + sim + '.png';
                             let shellExec = exec(shellCmd, function(err, stdout, stderr) {
                                 if (err) {
                                     console.error(err);
