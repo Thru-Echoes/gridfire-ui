@@ -27,6 +27,7 @@ var elDorado = [-120.48163577914237, 38.74627769461665];
 
 // Initialize OpenLayers map
 //var mapConfig = mercator.createMap('map', [-120.8958, 38.8375], 6, layerConfigs);
+//var mapConfig = mercator.createMap('map', bayArea, 10, layerConfigs);
 var mapConfig = mercator.createMap('map', elDorado, 10, layerConfigs);
 
 // View OpenLayers map 
