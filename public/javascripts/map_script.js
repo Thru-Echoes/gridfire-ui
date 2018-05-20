@@ -76,7 +76,8 @@ function setLayerVisibility(colValue, rowIdx) {
         if (validSims.includes(rowIdx)) {
             return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' checked></input>";
         } else {
-            return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' disabled></input>";
+            //return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' disabled></input>";
+            return "<input id='checkbox_" + rowIdx + "' type='checkbox' onclick='changeLayerVisibility(" + rowIdx + ")' name='postLayer' value='row_" + rowIdx + "' checked></input>";
         }
     } else {
         return "NA";
