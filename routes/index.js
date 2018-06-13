@@ -248,17 +248,27 @@ router.post('/', async function(req, res) {
             ignitionLat = req.body['ignition-lat'];
             ignitionLon = req.body['ignition-lon'];
 
+            /* FIXME: what size bounding box around single ignition site (using +/- 0.05) */
+            
+            lonMin = JSON.parse(ignitionLon) - 0.05;
+            lonMax = JSON.parse(ignitionLon) + 0.05;
+            latMin = JSON.parse(ignitionLat) - 0.05;
+            latMax = JSON.parse(ignitionLat) + 0.05;
+
+            // Postgres: create view with geoPolygon
+
+            var dims = await createViews(sessionId, lonMin, lonMax, latMin, latMax);
+            
+            ignitionRow = '[0 ' + dims.height + ']';
+            ignitionCol = '[0 ' + dims.width + ']';
+
+            console.log("\n(Single ignition) ignitionRow: " + ignitionRow);
+            console.log("ignitionCol: " + ignitionCol + "\n");
+
             // Postgres: get point as text from GeoJSON
-            var exGeoPoint = '{"type":"Point","coordinates":[-48.23456,20.12345]}';
+            /*var exGeoPoint = '{"type":"Point","coordinates":[-48.23456,20.12345]}';
             var geoPoint = '{"type":"Point","coordinates":[' + ignitionLon + ',' + ignitionLat + ']}';
-            getGeoPointQuery(geoPoint);
-
-            /*var getHeight = getHeightQuery('ch');
-            var getWidth = getWidthQuery('ch');
-
-            console.log("\n\ngetHeight: ", getHeight);
-            console.log("getWidth: ", getWidth);
-            console.log("\n\n");*/
+            getGeoPointQuery(geoPoint);*/
 
         } else {
 
